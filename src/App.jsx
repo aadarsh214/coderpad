@@ -9,12 +9,6 @@ import QuizApp from './components/QuizApp'; // Your QuizApp component
 import { useEffect, useState } from 'react';
 const App = () => {
 
-  useEffect(() => {
-    const metaTag = document.createElement('meta');
-    metaTag.httpEquiv = 'Content-Security-Policy';
-    metaTag.content = 'upgrade-insecure-requests';
-    document.getElementsByTagName('head')[0].appendChild(metaTag);
-  }, []);
 
 
   return (
