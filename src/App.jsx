@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import Home from './components/Home';
 import QuizApp from './components/QuizApp'; // Your QuizApp component
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 const App = () => {
 
   useEffect(() => {
