@@ -24,7 +24,7 @@ const QuizApp = () => {
     
     const fetchQuizData = async () => {
       try {
-        const response = await axios.get(`http://13.239.62.23:4000/sql-quiz/${quizID}/${userID}`);
+        const response = await axios.get(`https://13.239.62.23/sql-quiz/${quizID}/${userID}`);
         setQuizData(response.data);
       } catch (error) {
         console.error('Error fetching quiz data:', error);
@@ -36,7 +36,7 @@ const QuizApp = () => {
 
   const handleRunCode = async () => {
     try {
-      const response = await axios.get(`http://13.239.62.23:4000/execute-sql/query?q=${encodeURIComponent(userQuery)}`);
+      const response = await axios.get(`https://13.239.62.23/execute-sql/query?q=${encodeURIComponent(userQuery)}`);
       const userAnswer = response.data;
 
       const expectedOutput = quizData.questions[currentQuestionIndex].expected_output;

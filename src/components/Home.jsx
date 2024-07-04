@@ -18,7 +18,7 @@ const Home = () => {
 
   const fetchQuizzes = async () => {
     try {
-      const response = await axios.get('http://13.239.62.23:4000/quiz/quizzes');
+      const response = await axios.get('https://13.239.62.23/quiz/quizzes');
       setQuizzes(response.data);
 
     
@@ -37,7 +37,7 @@ const Home = () => {
   const handleRegisterQuiz = async (quizID, userID) => {
     console.log(quizID+' '+userID);
     try {
-      const response = await axios.post('http://13.239.62.23:4000/sql-quiz/register', {
+      const response = await axios.post('https://13.239.62.23/sql-quiz/register', {
         userID: userID,
         quizID: quizID,
       }, {
