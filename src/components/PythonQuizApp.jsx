@@ -160,7 +160,7 @@ const PythonQuizApp = () => {
                   language="python"
                   value={userCode}
                   onChange={setUserCode}
-                  options={{ fontSize: 14 }}
+                  options={{ fontSize: 16 }}
                 />
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600 focus:outline-none"
