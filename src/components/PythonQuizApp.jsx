@@ -20,7 +20,7 @@ const PythonQuizApp = () => {
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
-        const response = await axios.get(`https://13.239.62.23/python-quiz/${quizID}/${userID}`);
+        const response = await axios.get(`http://13.239.62.23/python-quiz/${quizID}/${userID}`);
         setQuizData(response.data);
         setUserCode(response.data.questions[currentQuestionIndex].boilerplate_code || '');
       } catch (error) {
@@ -36,7 +36,7 @@ const PythonQuizApp = () => {
       const fullCode = `${userCode}\nprint(${testCase.input})`;
       try {
         const response = await axios.post(
-          'https://13.239.62.23/execute-python',
+          'http://13.239.62.23/execute-python',
           {
             pyCode: fullCode
           },
