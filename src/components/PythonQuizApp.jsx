@@ -16,7 +16,6 @@ const PythonQuizApp = () => {
   const userID = parsed.userID;
   const quizID = parsed.quizID;
 
-  console.log(quizID + ' ' + userID);
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -92,18 +91,29 @@ const PythonQuizApp = () => {
   };
 
   const handleSubmitQuiz = async () => {
-    try {
-      const response = await axios.post('https://13.239.62.23/python-quiz/update-scores', {
-        userID,
-        quizID,
-        score: Math.min(score, quizData.questions.length),
-      });
-      if (response.status === 200) {
-        window.location.href = '/?userID='+userID;
-      }
-    } catch (error) {
-      console.error('Error submitting quiz:', error);
-    }
+    window.location.href = '/?userID='+userID;
+    // try {
+    //   const response = await axios.post(
+    //     'http://13.239.62.23/python-quiz/update-scores',
+    //     {
+    //       userID,
+    //       quizID,
+    //       score: Math.min(score, quizData.questions.length),
+    //     },
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       }
+    //     }
+    //   );      
+
+   
+    //   if (response.status === 200) {
+       
+    //   }
+    // } catch (error) {
+    //   console.error('Error submitting quiz:', error);
+    // }
   };
 
   if (!quizData) return <div>Loading...</div>;
