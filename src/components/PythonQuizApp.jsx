@@ -47,7 +47,12 @@ const PythonQuizApp = () => {
             }
           }
         );
-        const userOutput = response.data.trim();
+        let userOutput = response.data;
+        if (typeof userOutput !== 'string') {
+          userOutput = userOutput.toString().trim();
+        } else {
+          userOutput = userOutput.trim();
+        }
 
         if (userOutput !== testCase.expected_output) {
           return false;
@@ -94,7 +99,7 @@ const PythonQuizApp = () => {
         score: Math.min(score, quizData.questions.length),
       });
       if (response.status === 200) {
-        window.location.href = '/quiz-homepage';
+        window.location.href = '/?userID='+userID;
       }
     } catch (error) {
       console.error('Error submitting quiz:', error);
