@@ -97,29 +97,29 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-wrap justify-center">
-      {quizzes.map((quiz) => (
-        <div key={quiz._id} className="max-w-sm rounded overflow-hidden shadow-lg m-4">
-          <div className="px-6 py-4">
-            <div className="font-bold text-xl mb-2">{quiz.quizName}</div>
-            <p className="text-gray-700 text-base">
-              Start Time: {new Date(quiz.start).toLocaleString()}<br />
-              End Time: {new Date(quiz.end).toLocaleString()}
-            </p>
-          </div>
-          <div className="px-6 py-4">
-            <button
-              onClick={() => registerORStart(quiz)}
-              className={`text-white font-bold py-2 px-4 rounded ${determineButtonColor(quiz)}`}
-              disabled={determineButtonLabel(quiz) === 'Ended'}
-            >
-              {determineButtonLabel(quiz)}
-            </button>
-          </div>
+    <div className="flex flex-wrap justify-center p-4">
+    {quizzes.map((quiz) => (
+      <div key={quiz._id} className="max-w-sm rounded overflow-hidden shadow-lg m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+        <div className="px-6 py-4">
+          <div className="font-bold text-xl mb-2">{quiz.quizName}</div>
+          <p className="text-gray-700 text-base">
+            Start Time: {new Date(quiz.start).toLocaleString()}<br />
+            End Time: {new Date(quiz.end).toLocaleString()}
+          </p>
         </div>
-      ))}
-    </div>
-  );
+        <div className="px-6 py-4">
+          <button
+            onClick={() => handleStartQuiz(quiz._id, 'someuserID@example.com')}
+            className={`text-white font-bold py-2 px-4 rounded ${determineButtonColor(quiz)}`}
+            disabled={determineButtonLabel(quiz) === 'Ended'}
+          >
+            {determineButtonLabel(quiz)}
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+);
 };
 
 export default Home;
