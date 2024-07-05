@@ -17,7 +17,7 @@ const Home = () => {
 
   const fetchQuizzes = async () => {
     try {
-      const response = await axios.get('http://13.239.62.23:4000/quiz/quizzes');
+      const response = await axios.get('https://server.datasenseai.com/quiz/quizzes');
       setQuizzes(response.data);
     } catch (error) {
       console.error('Error fetching quizzes:', error);
@@ -36,7 +36,7 @@ const Home = () => {
 
   const handleRegisterQuiz = async (quizID, userID) => {
     try {
-      const response = await axios.post('http://13.239.62.23:4000/sql-quiz/register', {
+      const response = await axios.post('https://server.datasenseai.com/sql-quiz/register', {
         userID: userID,
         quizID: quizID,
       }, {

@@ -26,7 +26,7 @@ const QuizApp = () => {
     
     const fetchQuizData = async () => {
       try {
-        const response = await axios.get(`http://13.239.62.23:4000/sql-quiz/${quizID}/${userID}`);
+        const response = await axios.get(`https://server.datasenseai.com/sql-quiz/${quizID}/${userID}`);
         setQuizData(response.data);
       } catch (error) {
         console.error('Error fetching quiz data:', error);
@@ -38,7 +38,7 @@ const QuizApp = () => {
 
   const handleRunCode = async () => {
     try {
-      const response = await axios.get(`http://13.239.62.23:4000/execute-sql/query?q=${encodeURIComponent(userQuery)}`);
+      const response = await axios.get(`https://server.datasenseai.com/execute-sql/query?q=${encodeURIComponent(userQuery)}`);
       const userAnswer = response.data;
 
       const expectedOutput = quizData.questions[currentQuestionIndex].expected_output;
@@ -102,7 +102,7 @@ const QuizApp = () => {
   const handleSaveResults = async () =>{
     try{
       setButtonText('Submitting...');
-      const response = await axios.post('http://13.239.62.23:4000/sql-quiz/update-scores',{
+      const response = await axios.post('https://server.datasenseai.com/sql-quiz/update-scores',{
         quizID: parsed.quizID,
         userID: parsed.userID,
         score : 1 
