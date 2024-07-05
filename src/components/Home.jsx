@@ -18,7 +18,7 @@ const Home = () => {
 
   const fetchQuizzes = async () => {
     try {
-      const response = await axios.get('https://13.239.62.23/quiz/quizzes');
+      const response = await axios.get('http://13.239.62.23:4000/quiz/quizzes');
       setQuizzes(response.data);
 
     
@@ -37,7 +37,7 @@ const Home = () => {
   const handleRegisterQuiz = async (quizID, userID) => {
     console.log(quizID+' '+userID);
     try {
-      const response = await axios.post('https://13.239.62.23/sql-quiz/register', {
+      const response = await axios.post('http://13.239.62.23:4000/sql-quiz/register', {
         userID: userID,
         quizID: quizID,
       }, {
@@ -81,45 +81,45 @@ const Home = () => {
       return 'Ended';
     }
   };
-
+  
   const determineButtonColor = (quiz) => {
     const now = new Date();
     const startDate = new Date(quiz.start);
     const endDate = new Date(quiz.end);
 
     if (now < startDate) {
-      return 'bg-blue-500 hover:bg-blue-700';
+      return 'bg-blue-600 hover:bg-blue-700';
     } else if (now >= startDate && now <= endDate) {
-      return 'bg-green-500 hover:bg-green-700';
+      return 'bg-emerald-600 hover:bg-green-700';
     } else {
-      return 'bg-gray-500 hover:bg-gray-700';
+      return 'bg-gray-700 hover:bg-gray-700';
     }
   };
 
   return (
-    <div className="flex flex-wrap justify-center p-4">
-    {quizzes.map((quiz) => (
-      <div key={quiz._id} className="max-w-sm rounded overflow-hidden shadow-lg m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-        <div className="px-6 py-4">
-          <div className="font-bold text-xl mb-2">{quiz.quizName}</div>
-          <p className="text-gray-700 text-base">
-            Start Time: {new Date(quiz.start).toLocaleString()}<br />
-            End Time: {new Date(quiz.end).toLocaleString()}
-          </p>
+    <div className="flex flex-wrap justify-center">
+      {quizzes.map((quiz) => (
+        <div key={quiz._id} className="max-w-sm rounded overflow-hidden shadow-xl m-4">
+          <div className="px-6 py-4 border-[2px]">
+            <div className=" font-[neue montreal] font-bold text-xl mb-2">{quiz.quizName}</div>
+            <p className="text-gray-900 text-base ">
+              Start Time: {new Date(quiz.start).toLocaleString()}<br />
+              End Time : {new Date(quiz.end).toLocaleString()}
+            </p>
+          </div>
+          <div className="px-6 py-4">
+            <button
+              onClick={() => registerORStart(quiz)}
+              className={`text-white font-bold py-2 px-5 rounded-xl ${determineButtonColor(quiz)}`}
+              disabled={determineButtonLabel(quiz) === 'Ended'}
+            >
+              {determineButtonLabel(quiz)}
+            </button>
+          </div>
         </div>
-        <div className="px-6 py-4">
-          <button
-            onClick={() => handleStartQuiz(quiz._id, 'someuserID@example.com')}
-            className={`text-white font-bold py-2 px-4 rounded ${determineButtonColor(quiz)}`}
-            disabled={determineButtonLabel(quiz) === 'Ended'}
-          >
-            {determineButtonLabel(quiz)}
-          </button>
-        </div>
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
 };
 
 export default Home;
