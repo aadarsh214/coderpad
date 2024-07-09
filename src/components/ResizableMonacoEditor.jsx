@@ -35,7 +35,7 @@ const ResizableMonacoEditor = ({ language, defaultValue, onChange }) => {
 
   return (
     <ResizableBox
-      width={600} // Initial width
+      width={728} // Initial width
       height={300} // Initial height
       minConstraints={[200, 100]}
       maxConstraints={[800, 600]}

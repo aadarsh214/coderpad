@@ -8,10 +8,11 @@ const Home = () => {
 
   const {loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently} = useAuth0();
 
-  if(!isAuthenticated){
-    loginWithPopup
-  }
-
+  useEffect(() => {
+    if (!isAuthenticated) {
+      loginWithRedirect();
+    }
+  }, [isAuthenticated, loginWithRedirect]);
   const navigateTo = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [filterType, setFilterType] = useState('all'); // 'all', 'sql', 'python'
@@ -108,6 +109,7 @@ const Home = () => {
   });
 
   return (
+
     <div className="flex flex-col items-center">
       <div className="my-4">
         <button
@@ -165,6 +167,7 @@ const Home = () => {
         ))}
       </div>
     </div>
+  
   );
 };
 
