@@ -30,8 +30,7 @@ const Quiz = () => {
         // Check if quiz has already been completed for this quizID
         const quizCompletionStatus = localStorage.getItem(`quizCompleted_${quizID}`);
         if (quizCompletionStatus) {
-            setQuizCompleted(true);
-            showQuizAttemptedPopup();
+            window.location.href = '/?userID=' + userID;
             return;
         }
 
