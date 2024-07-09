@@ -147,10 +147,10 @@ const Home = () => {
             <div key={quiz._id} className="max-w-sm rounded overflow-hidden shadow-xl m-4">
               <div className="px-6 py-4 border-[2px]">
                 <div className="font-bold text-xl mb-2">{quiz.quizName}</div>
-                <p className="text-gray-900 text-base">
+                {/* <p className="text-gray-900 text-base">
                   Start Time: {new Date(quiz.start).toLocaleString()}<br />
                   End Time: {new Date(quiz.end).toLocaleString()}
-                </p>
+                </p> */}
               </div>
               <div className="px-6 py-4">
                 <button
