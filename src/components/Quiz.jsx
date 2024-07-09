@@ -104,8 +104,9 @@ const Quiz = () => {
         // Prepare data for the API call
         const userInfo = {
             quizID: quizID, // Replace with your actual quiz ID
-            userID: `${user.email},  ${user.name}`, // Assuming user.email is the Auth0 user's email
+            userID: `${user.email},  ${user.name}, ${user.phone_number}`, // Assuming user.email is the Auth0 user's email
            // Assuming user.name is the Auth0 user's full name
+          // userID: userID,
             score: calculatedScore,
         };
     
