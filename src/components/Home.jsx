@@ -34,11 +34,11 @@ const Home = () => {
       alert('You need to log in to start the quiz.');
      // return;
     }
-    if (quizName.toLowerCase().includes('sql')) {
+    if (quizName.toLowerCase().includes('sql:')) {
       navigateTo(`/quiz?quizID=${quizID}&userID=${userID}`);
-    } else if (quizName.toLowerCase().includes('python')) {
+    } else if (quizName.toLowerCase().includes('python:')) {
       navigateTo(`/pyQuiz?quizID=${quizID}&userID=${userID}`);
-    } else if (quizName.toLowerCase().includes('mcq')) {
+    } else if (quizName.toLowerCase().includes('MCQ:')) {
       navigateTo(`/mcqQuiz?quizID=${quizID}&userID=${userID}`);
     }
   };
