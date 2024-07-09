@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import MonacoEditor from './ResizableMonacoEditor';
 import queryString from 'query-string';
-import {useAuth0} from '@auth0/auth0-react'
+import { useAuth0 } from '@auth0/auth0-react';
 
 const PythonQuizApp = () => {
+  const { loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-  const {loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently} = useAuth0();
-  
   const [quizData, setQuizData] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userCode, setUserCode] = useState('');
@@ -17,6 +16,7 @@ const PythonQuizApp = () => {
   const [score, setScore] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+  const [userOutput, setUserOutput] = useState(''); // Add state to store user output
 
   const parsed = queryString.parse(window.location.search);
   const userID = parsed.userID;
@@ -53,6 +53,7 @@ const PythonQuizApp = () => {
         }
 
         if (userOutput !== testCase.expected_output) {
+          setUserOutput(userOutput); // Update user output state
           return false;
         }
       } catch (error) {
@@ -199,9 +200,15 @@ const PythonQuizApp = () => {
           </div>
           <div className={`mt-4 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded p-4 flex-grow overflow-y-auto`}>
             {showFeedback && (
-               <p className={feedback.includes('All test cases passed') ? 'text-green-500' : 'text-red-500'}>
-               {feedback}
-             </p>
+              <p className={feedback.includes('All test cases passed') ? 'text-green-500' : 'text-red-500'}>
+                {feedback}
+              </p>
+            )}
+            {userOutput && (
+              <div>
+                <h3 className="text-lg font-bold">Your Output:</h3>
+                <pre>{userOutput}</pre>
+              </div>
             )}
           </div>
         </div>
