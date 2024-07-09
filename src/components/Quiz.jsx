@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'tailwindcss/tailwind.css';
 import { useAuth0 } from '@auth0/auth0-react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import queryString from 'query-string';
 
 const fetchQuestions = async () => {
@@ -29,6 +31,7 @@ const Quiz = () => {
         const quizCompletionStatus = localStorage.getItem(`quizCompleted_${quizID}`);
         if (quizCompletionStatus) {
             setQuizCompleted(true);
+            showQuizAttemptedPopup();
             return;
         }
 
@@ -111,6 +114,9 @@ const Quiz = () => {
         // Save quiz completion status for this quizID
         localStorage.setItem(`quizCompleted_${quizID}`, true);
 
+        // Show attempt popup
+        showQuizAttemptedPopup();
+
         // Prepare data for the API call
         const userInfo = {
             quizID: quizID,
@@ -137,6 +143,13 @@ const Quiz = () => {
         }
     };
 
+    const showQuizAttemptedPopup = () => {
+        toast.info('You have already attempted this quiz.', {
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 3000,
+            hideProgressBar: true,
+        });
+    };
 
     const resetQuiz = () => {
         setCurrentQuestionIndex(0);
@@ -145,9 +158,6 @@ const Quiz = () => {
         setScore(0);
         setTimer(30);
         setQuizCompleted(false);
-
-        // Remove quiz completion status from localStorage
-        localStorage.removeItem(`quizCompleted_${quizID}`);
     };
 
     if (questions.length === 0) {
@@ -159,19 +169,35 @@ const Quiz = () => {
             <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
                 <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
                     <h1 className="text-3xl font-semibold mb-6 text-gray-800">Quiz Completed</h1>
-                    <p className="text-2xl mb-6 text-gray-700">Your Score: <span className="font-semibold">{score}</span> / {questions.length}</p>
+                    <p className="text-2xl mb-6 text-gray-700">
+                        Your Score: <span className="font-semibold">{score}</span> / {questions.length}
+                    </p>
                     <div className="mb-6 space-y-4">
                         {questions.map((question, index) => (
                             <div key={index} className="border-b pb-4">
                                 <h2 className="text-lg font-medium mb-2 text-gray-800">{question.question}</h2>
-                                <p className={`p-2 rounded ${userAnswers[index] && questions[index].options[userAnswers[index]] === questions[index].answer ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                <p
+                                    className={`p-2 rounded ${
+                                        userAnswers[index] &&
+                                        questions[index].options[userAnswers[index]] === questions[index].answer
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
+                                    }`}
+                                >
                                     Your answer: {questions[index].options[userAnswers[index]] || 'Not answered'}
                                 </p>
-                                <p className="p-2 rounded bg-blue-100 text-blue-800 mt-2">Correct answer: {questions[index].answer}</p>
+                                <p className="p-2 rounded bg-blue-100 text-blue-800 mt-2">
+                                    Correct answer: {questions[index].answer}
+                                </p>
                             </div>
                         ))}
                     </div>
-                    <button className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600 transition duration-300" onClick={resetQuiz}>Restart Quiz</button>
+                    <button
+                        className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600 transition duration-300"
+                        onClick={resetQuiz}
+                    >
+                        Restart Quiz
+                    </button>
                 </div>
             </div>
         );
@@ -181,19 +207,21 @@ const Quiz = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
                 <div className="flex justify-between items-center mb-6">
-                    <span className="text-sm text-gray-500">Question {currentQuestionIndex + 1} of {questions.length}</span>
+                    <span className="text-sm text-gray-500">
+                        Question {currentQuestionIndex + 1} of {questions.length}
+                    </span>
                     <span className="text-sm font-semibold text-blue-500">{timer}s</span>
                 </div>
                 <h1 className="text-2xl font-semibold mb-6 text-gray-800">{questions[currentQuestionIndex].question}</h1>
                 <div className="space-y-4 mb-8">
                     {Object.entries(questions[currentQuestionIndex].options).map(([key, value]) => (
-                        <div 
-                            key={key} 
+                        <div
+                            key={key}
                             className={`p-3 rounded border cursor-pointer transition-colors duration-300
-                                ${selectedOption === key 
-                                    ? 'bg-blue-500 text-white border-blue-600' 
+                                ${selectedOption === key
+                                    ? 'bg-blue-500 text-white border-blue-600'
                                     : 'bg-white text-gray-800 border-gray-300 hover:border-blue-500'
-                                }`} 
+                                }`}
                             onClick={() => selectOption(key)}
                         >
                             {value}
@@ -202,15 +230,15 @@ const Quiz = () => {
                 </div>
                 <div className="flex justify-between">
                     {currentQuestionIndex === questions.length - 1 ? (
-                        <button 
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300" 
+                        <button
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
                             onClick={submitQuiz}
                         >
                             Submit
                         </button>
                     ) : (
-                        <button 
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300" 
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                             onClick={nextQuestion}
                         >
                             Next
@@ -218,6 +246,7 @@ const Quiz = () => {
                     )}
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };
