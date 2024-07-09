@@ -32,7 +32,7 @@ const Home = () => {
   const handleStartQuiz = (quizID, userID, quizName) => {
     if (!isAuthenticated) {
       alert('You need to log in to start the quiz.');
-      return;
+     // return;
     }
     if (quizName.toLowerCase().includes('sql')) {
       navigateTo(`/quiz?quizID=${quizID}&userID=${userID}`);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'tailwindcss/tailwind.css';
-
+import { useAuth0 } from '@auth0/auth0-react';
+import queryString from 'query-string';
 const fetchQuestions = async () => {
     const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions');
     const data = await response.json();
@@ -10,6 +11,10 @@ const fetchQuestions = async () => {
 const Quiz = () => {
 
     const {loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently} = useAuth0();
+
+    const parsed = queryString.parse(window.location.search);
+    const userID = parsed.userID;
+    const quizID = parsed.quizID;
 
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -84,18 +89,45 @@ const Quiz = () => {
         }
     };
 
-    const submitQuiz = () => {
+    const submitQuiz = async () => {
         const newAnswers = [...userAnswers];
         newAnswers[currentQuestionIndex] = selectedOption || null;
         setUserAnswers(newAnswers);
-
+    
         const calculatedScore = newAnswers.reduce((total, userAnswer, index) => {
             return userAnswer && questions[index].options[userAnswer] === questions[index].answer ? total + 1 : total;
         }, 0);
-
+    
         setScore(calculatedScore);
         setQuizCompleted(true);
+    
+        // Prepare data for the API call
+        const userInfo = {
+            quizID: quizID, // Replace with your actual quiz ID
+            userID: `${user.email},  ${user.name}`, // Assuming user.email is the Auth0 user's email
+           // Assuming user.name is the Auth0 user's full name
+            score: calculatedScore,
+        };
+    
+        try {
+            const response = await fetch('https://server.datasenseai.com/quizadmin/update-scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userInfo),
+            });
+    
+            if (response.ok) {
+                console.log('Score updated successfully!');
+            } else {
+                console.error('Failed to update score:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error updating score:', error.message);
+        }
     };
+    
 
     const resetQuiz = () => {
         setCurrentQuestionIndex(0);
