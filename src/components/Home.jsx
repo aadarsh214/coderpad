@@ -32,16 +32,22 @@ const Home = () => {
   const handleStartQuiz = (quizID, userID, quizName) => {
     if (!isAuthenticated) {
       alert('You need to log in to start the quiz.');
-     // return;
+      return; // Exit early if the user is not authenticated
     }
-    if (quizName.toLowerCase().includes('sql:')) {
+  
+    const lowerCaseQuizName = quizName.toLowerCase();
+  
+    if (lowerCaseQuizName.includes('sql:')) {
       navigateTo(`/quiz?quizID=${quizID}&userID=${userID}`);
-    } else if (quizName.toLowerCase().includes('python:')) {
+    } else if (lowerCaseQuizName.includes('python:')) {
       navigateTo(`/pyQuiz?quizID=${quizID}&userID=${userID}`);
-    } else if (quizName.toLowerCase().includes('MCQ:')) {
+    } else if (lowerCaseQuizName.includes('mcq:')) {
       navigateTo(`/mcqQuiz?quizID=${quizID}&userID=${userID}`);
+    } else {
+      alert('Unknown quiz type.');
     }
   };
+  
 
   const handleRegisterQuiz = async (quizID, userID) => {
     if (!isAuthenticated) {
