@@ -6,7 +6,7 @@ const Navbar = () => {
 
   return (
     <nav className="w-full bg-blue-500 p-4 flex justify-between items-center">
-      <div className="text-white text-xl font-bold">Quiz Application</div>
+      <div className="text-white text-xl font-bold">Datasense</div>
       <div>
         {!isAuthenticated ? (
           <button
