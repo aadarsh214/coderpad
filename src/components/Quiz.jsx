@@ -195,7 +195,7 @@ const Quiz = () => {
                         className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600 transition duration-300"
                         onClick={resetQuiz}
                     >
-                        Restart Quiz
+                        Go Back
                     </button>
                 </div>
             </div>
