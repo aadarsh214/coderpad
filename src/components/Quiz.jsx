@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'tailwindcss/tailwind.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import queryString from 'query-string';
+
 const fetchQuestions = async () => {
     const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions');
     const data = await response.json();
@@ -9,8 +10,7 @@ const fetchQuestions = async () => {
 };
 
 const Quiz = () => {
-
-    const {loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently} = useAuth0();
+    const { loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
     const parsed = queryString.parse(window.location.search);
     const userID = parsed.userID;
@@ -25,6 +25,13 @@ const Quiz = () => {
     const [quizCompleted, setQuizCompleted] = useState(false);
 
     useEffect(() => {
+        // Check if quiz has already been completed for this quizID
+        const quizCompletionStatus = localStorage.getItem(`quizCompleted_${quizID}`);
+        if (quizCompletionStatus) {
+            setQuizCompleted(true);
+            return;
+        }
+
         const loadQuestions = async () => {
             const data = await fetchQuestions();
             setQuestions(data);
@@ -93,23 +100,24 @@ const Quiz = () => {
         const newAnswers = [...userAnswers];
         newAnswers[currentQuestionIndex] = selectedOption || null;
         setUserAnswers(newAnswers);
-    
+
         const calculatedScore = newAnswers.reduce((total, userAnswer, index) => {
             return userAnswer && questions[index].options[userAnswer] === questions[index].answer ? total + 1 : total;
         }, 0);
-    
+
         setScore(calculatedScore);
         setQuizCompleted(true);
-    
+
+        // Save quiz completion status for this quizID
+        localStorage.setItem(`quizCompleted_${quizID}`, true);
+
         // Prepare data for the API call
         const userInfo = {
-            quizID: quizID, // Replace with your actual quiz ID
-            userID: `${user.email},  ${user.name}, ${user.phone_number}`, // Assuming user.email is the Auth0 user's email
-           // Assuming user.name is the Auth0 user's full name
-          // userID: userID,
+            quizID: quizID,
+            userID: `${user.email},  ${user.name}, ${user.phone_number}`,
             score: calculatedScore,
         };
-    
+
         try {
             const response = await fetch('https://server.datasenseai.com/quizadmin/update-scores', {
                 method: 'POST',
@@ -118,7 +126,7 @@ const Quiz = () => {
                 },
                 body: JSON.stringify(userInfo),
             });
-    
+
             if (response.ok) {
                 console.log('Score updated successfully!');
             } else {
@@ -128,7 +136,7 @@ const Quiz = () => {
             console.error('Error updating score:', error.message);
         }
     };
-    
+
 
     const resetQuiz = () => {
         setCurrentQuestionIndex(0);
@@ -137,6 +145,9 @@ const Quiz = () => {
         setScore(0);
         setTimer(30);
         setQuizCompleted(false);
+
+        // Remove quiz completion status from localStorage
+        localStorage.removeItem(`quizCompleted_${quizID}`);
     };
 
     if (questions.length === 0) {
