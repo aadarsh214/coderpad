@@ -151,12 +151,15 @@ const Quiz = () => {
     };
 
     const resetQuiz = () => {
-        setCurrentQuestionIndex(0);
-        setSelectedOption(null);
-        setUserAnswers([]);
-        setScore(0);
-        setTimer(30);
-        setQuizCompleted(false);
+        // setCurrentQuestionIndex(0);
+        // setSelectedOption(null);
+        // setUserAnswers([]);
+        // setScore(0);
+        // setTimer(30);
+        // setQuizCompleted(false);
+
+        window.location.href = '/?userID=' + userID;
+        return;
     };
 
     if (questions.length === 0) {
