@@ -11,6 +11,10 @@ const Home = () => {
   const parsed = queryString.parse(window.location.search);
   const userID = parsed.userID; // Retrieve the value of a specific query parameter
 
+
+
+  console.log(userID)
+
   useEffect(() => {
     fetchQuizzes();
   }, []);
@@ -29,6 +33,8 @@ const Home = () => {
       navigateTo(`/quiz?quizID=${quizID}&userID=${userID}`);
     } else if (quizName.toLowerCase().includes('python')) {
       navigateTo(`/pyQuiz?quizID=${quizID}&userID=${userID}`);
+    }else if (quizName.toLowerCase().includes('mcq')) {
+      navigateTo(`/mcqQuiz?quizID=${quizID}&userID=${userID}`);
     }
     // Handle default case if neither 'sql' nor 'python' is found in quizName
     //navigateTo(`/quiz?quizID=${quizID}&userID=${userID}`);
@@ -87,6 +93,8 @@ const Home = () => {
       return quiz.quizName.toLowerCase().includes('sql');
     } else if (filterType === 'python') {
       return quiz.quizName.toLowerCase().includes('python');
+    }else if (filterType === 'mcq') {
+      return quiz.quizName.toLowerCase().includes('mcq');
     }
     return true;
   });
@@ -111,6 +119,13 @@ const Home = () => {
           className={`mx-2 px-4 py-2 rounded-lg ${filterType === 'python' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}
         >
           Python
+        </button>
+
+        <button
+          onClick={() => setFilterType('mcq')}
+          className={`mx-2 px-4 py-2 rounded-lg ${filterType === 'mcq' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}
+        >
+          MCQ
         </button>
       </div>
       <div className="flex flex-wrap justify-center">

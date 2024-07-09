@@ -11,12 +11,13 @@ const QuizApp = () => {
   const [saveStatus, setSaveStatus] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [buttonText, setButtonText] = useState('Save Results');
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const parsed = queryString.parse(window.location.search);
   const userID = parsed.userID;
   const quizID = parsed.quizID;
 
-  console.log(quizID + ' '+ userID);
+ 
 
 
   
@@ -89,7 +90,7 @@ const QuizApp = () => {
   
   const handleQuestionSelect = (index) => {
     setCurrentQuestionIndex(index);
-    setFeedback('');
+    setFeedback('');  
     setShowFeedback(false); // Reset feedback when selecting new question
   };
 
@@ -111,7 +112,9 @@ const QuizApp = () => {
       console.log('Results saved successfully:', response.data);
       setSavesStatus('Results saved succesfully!');
       setButtonText('Submitted');
+      window.location.href = '/?userID=' + userID;
     } catch(error) {
+      window.location.href = '/?userID=' + userID;
       console.error('Error saving quiz results:', error);
       setSaveStatus('Failed to save results. Please try again.');
       setButtonText('Submitted');
@@ -122,115 +125,142 @@ const QuizApp = () => {
 
 
   return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+      <nav className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 flex justify-between items-center`}>
+        <h1 className=" mb-4 text-xl font-bold">SQL Quiz</h1>
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className={`px-4 py-2 rounded-full ${isDarkMode ? 'bg-white text-black' : 'bg-gray-800 text-white'}`}
+        >
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+      </nav>
+      <div className="flex h-[calc(100vh-4rem)]">
+        {/* Left side: Question List and Details */}
+        <div className="w-1/2 flex flex-col overflow-hidden">
+          {/* Question List */}
+          <div className={`flex gap-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} px-4 h-1/8`}>
+            <h3 className="text-lg font-semibold mb-1 cursor-pointer ">Question</h3>
+            <h3 className="text-lg font-semibold mb-1 cursor-pointer">Solution</h3>
+            <ul className="flex">
+              {quizData.questions.map((question, index) => (
+                <li
+                  key={index}
+                  className={`cursor-pointer py-1 px-1 rounded ${
+                    index === currentQuestionIndex 
+                      ? ' text-white' 
+                      : isDarkMode 
+                        ? 'hover:bg-gray-700' 
+                        : 'hover:bg-gray-300'
+                  }`}
+                  onClick={() => handleQuestionSelect(index)}
+                >
+                  {index + 1}
+                </li>
+              ))}
+            </ul>
+          </div>
   
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-3 bg-gray-200 p-4">
-              <h3 className="text-lg font-bold mb-4">Questions</h3>
-              <ul>
-                {quizData.questions.map((question, index) => (
-                  <li
-                    key={index}
-                    className={`cursor-pointer py-2 px-4 rounded ${index === currentQuestionIndex ? 'bg-blue-500 text-white' : 'hover:bg-gray-300'}`}
-                    onClick={() => handleQuestionSelect(index)}
-                  >
-                    Question {index + 1}
-                  </li>
-                ))}
-              </ul>
+          {/* Question Details */}
+          <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-4 flex-grow overflow-y-auto`}>
+            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
+              <h3 className="text-xl font-bold mb-2">{currentQuestion.question_text}</h3>
+              <br />
+              <table className="w-full mb-2">
+                <thead>
+                  <tr className={isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}>
+                    {currentQuestion.table_data.columns.map((column, index) => (
+                      <th key={index} className="border px-4 py-2">{column}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentQuestion.table_data.rows.map((row, rowIndex) => (
+                    <tr key={rowIndex} className={isDarkMode ? 'bg-gray-600' : 'bg-gray-50'}>
+                      {row.map((cell, cellIndex) => (
+                        <td key={cellIndex} className="border px-4 py-2">{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div className="col-span-6 p-4">
-              <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-          
-                <h3 className="text-xl font-bold mb-2">{currentQuestion.question_text}</h3>
-                <br />
-                <table className="w-full mb-2">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      {currentQuestion.table_data.columns.map((column, index) => (
-                        <th key={index} className="border px-4 py-2">{column}</th>
+            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
+              <h3 className="text-lg font-bold mb-2">Expected Answer</h3>
+              <table className="w-full mb-2">
+                <tbody>
+                  {currentQuestion.expected_output.map((row, rowIndex) => (
+                    <tr key={rowIndex} className={isDarkMode ? 'bg-gray-600' : 'bg-gray-50'}>
+                      {Object.values(row).map((value, cellIndex) => (
+                        <td key={cellIndex} className="border px-4 py-2">{value}</td>
                       ))}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {currentQuestion.table_data.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {row.map((cell, cellIndex) => (
-                          <td key={cellIndex} className="border px-4 py-2">{cell}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-bold mb-2">Expected Answer</h3>
-                <table className="w-full mb-2">
-                  {/* <thead>
-                    <tr className="bg-gray-100">
-                      {Object.keys(currentQuestion.expected_output[0]).map((key, index) => (
-                        <th key={index} className="border px-4 py-2">{key}</th>
-                      ))}
-                    </tr>
-                  </thead> */}
-                  <tbody>
-                    {currentQuestion.expected_output.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {Object.values(row).map((value, cellIndex) => (
-                          <td key={cellIndex} className="border px-4 py-2">{value}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="bg-white shadow-md rounded-lg p-6">
-                <MonacoEditor
-                  width="100%"
-                  height="400"
-                  language="sql"
-                  value={userQuery}
-                  onChange={setUserQuery}
-                  options={{ fontSize: 16 }}
-                />
-                <button
-                  className=" bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600 focus:outline-black"
-                  onClick={handleRunCode}
-                >
-                  Run Code
-                </button>
-                <button 
-                  onClick={handleSaveResults} 
-                  className="ml-2 bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                >
-                  {buttonText}
-                </button>
-                
-                
-                {showFeedback && (
-                  <div className="mt-2 flex flex-col space-y-1">
-                  {feedback.isCorrect ? (
-                  <span className="text-green-600 text-3xl font-semibold">Correct!</span>
-                    ) : (
-                      <>
-                  <span className="text-red-500 text-xl font-semibold mb-2">Incorrect code!</span>
-                  <span className="font-semibold text-blue-600 text-xl mb-2">Expected:</span>
-                  <span className="whitespace-pre-wrap">{feedback.expected}</span>
-                  <span className="font-semibold text-lg">Your answer:</span>
-                  <span className="whitespace-pre-wrap">{feedback.userAnswer}</span>
-                      </>
-                      )}
-                  </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+  
+        {/* Right side: Code Editor and Results */}
+        <div className={`w-1/2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 flex flex-col`}>
+          <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-t-lg p-2`}>
+            <span className="font-semibold">SQL</span>
+          </div>
+          <MonacoEditor
+            width="100%"
+            height="400"
+            language="sql"
+            theme={isDarkMode ? "vs-dark" : "light"}
+            value={userQuery}
+            onChange={setUserQuery}
+            options={{ fontSize: 16 }}
+          />
+          <div className="flex mt-2 space-x-2">
+            <button
+              className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
+              onClick={handleRunCode}
+            >
+              Run Code
+            </button>
+            <button 
+              onClick={handleSaveResults} 
+              className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+            >
+              {buttonText}
+            </button>
+          </div>
+          <div className={`mt-4 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded p-4 flex-grow overflow-y-auto`}>
+            {showFeedback && (
+              <div className="mt-2 flex flex-col space-y-4">
+                {feedback.isCorrect ? (
+                  <span className="text-green-400 text-3xl font-semibold">Correct!</span>
+                ) : (
+                  <>
+                    <span className="text-red-400 text-xl font-semibold">Incorrect code!</span>
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr>
+                          <th className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>Expected Output</th>
+                          <th className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>Your Output</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="border px-4 py-2 whitespace-pre-wrap">{feedback.expected}</td>
+                          <td className="border px-4 py-2 whitespace-pre-wrap">{feedback.userAnswer}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
     </div>
-   );
+  );
 
 };
 
