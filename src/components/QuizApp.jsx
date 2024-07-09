@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import MonacoEditor from './ResizableMonacoEditor' // Assuming you have a Monaco Editor wrapper component
 import queryString from 'query-string';
+import {useAuth0} from '@auth0/auth0-react'
 
 const QuizApp = () => {
+
+  const {loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently} = useAuth0();
+
+  //Will check here if user is registerd in whitelist
+
   const [quizData, setQuizData] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userQuery, setUserQuery] = useState('');

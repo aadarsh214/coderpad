@@ -2,8 +2,16 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 import { useNavigate } from 'react-router-dom';
+import {useAuth0} from '@auth0/auth0-react'
 
 const Home = () => {
+
+  const {loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently} = useAuth0();
+
+  if(!isAuthenticated){
+    loginWithPopup
+  }
+
   const navigateTo = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [filterType, setFilterType] = useState('all'); // 'all', 'sql', 'python'
