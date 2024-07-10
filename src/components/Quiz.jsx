@@ -122,11 +122,7 @@ const Quiz = () => {
         setScore(calculatedScore);
         setQuizCompleted(true);
 
-        // Save quiz completion status for this quizID
-        localStorage.setItem(`quizCompleted_${quizID}`, true);
-
-        // Show attempt popup
-        showQuizAttemptedPopup();
+       
 
         // Prepare data for the API call
         const userInfo = {
@@ -152,6 +148,12 @@ const Quiz = () => {
         } catch (error) {
             console.error('Error updating score:', error.message);
         }
+
+         // Save quiz completion status for this quizID
+         localStorage.setItem(`quizCompleted_${quizID}`, true);
+
+         // Show attempt popup
+         showQuizAttemptedPopup();
     };
 
     const showQuizAttemptedPopup = () => {
