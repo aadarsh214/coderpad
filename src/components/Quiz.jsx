@@ -5,15 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import queryString from 'query-string';
 
-const parsed = queryString.parse(window.location.search);
-const userID = parsed.userID;
-const quizID = parsed.quizID;
 
-const fetchQuestions = async () => {
-    const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions/'+quizID);
-    const data = await response.json();
-    return data;
-};
+
 
 const Quiz = () => {
     const { loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -29,17 +22,30 @@ const Quiz = () => {
     const [quizCompleted, setQuizCompleted] = useState(false);
 
     useEffect(() => {
+        const parsed = queryString.parse(window.location.search);
+        const userID = parsed.userID;
+        const quizID = parsed.quizID;
+        
+        console.log('Parsed query string:', parsed);
+        console.log('UserID:', userID);
+        console.log('QuizID:', quizID);
+
+        if (!userID || !quizID) {
+            alert('User ID or Quiz ID is missing in the URL');
+            return;
+        }
+
         // Check if quiz has already been completed for this quizID
         const quizCompletionStatus = localStorage.getItem(`quizCompleted_${quizID}`);
         if (quizCompletionStatus) {
             alert('You already attempted this quiz');
             window.location.href = '/?userID=' + userID;
-            
             return;
         }
 
         const loadQuestions = async () => {
-            const data = await fetchQuestions();
+            const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions/' + quizID);
+            const data = await response.json();
             setQuestions(data);
         };
         loadQuestions();
