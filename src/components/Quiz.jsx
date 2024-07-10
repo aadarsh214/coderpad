@@ -5,8 +5,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import queryString from 'query-string';
 
+const parsed = queryString.parse(window.location.search);
+const userID = parsed.userID;
+const quizID = parsed.quizID;
+
 const fetchQuestions = async () => {
-    const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions');
+    const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions/'+quizID);
     const data = await response.json();
     return data;
 };
@@ -14,9 +18,7 @@ const fetchQuestions = async () => {
 const Quiz = () => {
     const { loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-    const parsed = queryString.parse(window.location.search);
-    const userID = parsed.userID;
-    const quizID = parsed.quizID;
+   
 
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
