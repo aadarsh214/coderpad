@@ -10,7 +10,9 @@ import queryString from 'query-string';
 
 const Quiz = () => {
     const { loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0();
-
+    const parsed = queryString.parse(window.location.search);
+    const userID = parsed.userID;
+    const quizID = parsed.quizID;
    
 
     const [questions, setQuestions] = useState([]);
