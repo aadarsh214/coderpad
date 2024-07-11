@@ -60,7 +60,7 @@ const Quiz = () => {
                     if (prevTimer <= 1) {
                         clearInterval(timerInterval);
                         handleTimeUp();
-                        return 30;
+                        return 90;
                     }
                     return prevTimer - 1;
                 });
@@ -79,7 +79,7 @@ const Quiz = () => {
 
     const loadQuestion = () => {
         setSelectedOption(null);
-        setTimer(30);
+        setTimer(90);
     };
 
     useEffect(() => {
