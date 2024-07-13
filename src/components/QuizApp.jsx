@@ -19,6 +19,8 @@ const QuizApp = () => {
   const [buttonText, setButtonText] = useState('Save Results');
   const [isDarkMode, setIsDarkMode] = useState(true);
 
+  const [isRunning, setIsRunning] = useState(false);
+
   const parsed = queryString.parse(window.location.search);
   const userID = parsed.userID;
   const quizID = parsed.quizID;
@@ -44,30 +46,36 @@ const QuizApp = () => {
   }, []);
 
   const handleRunCode = async () => {
+    setIsRunning(true);
     try {
       const response = await axios.get(`https://server.datasenseai.com/execute-sql/query?q=${encodeURIComponent(userQuery)}`);
       const userAnswer = response.data;
-
+  
       const expectedOutput = quizData.questions[currentQuestionIndex].expected_output;
       const isCorrect = compareResults(userAnswer, expectedOutput);
-
+  
       if (isCorrect) {
-        setFeedback({ text: 'Correct!', isCorrect: true });
+        setFeedback({ text: 'Correct!', isCorrect: true, userAnswer: userAnswer });
       } else {
         setFeedback({
           isCorrect: false,
           expected: expectedOutput.map(row => Object.values(row).join(', ')).join(' | '),
-          userAnswer: userAnswer.map(row => Object.values(row).join(', ')).join(' | ')
+          userAnswer: Array.isArray(userAnswer) 
+            ? userAnswer.map(row => Object.values(row).join(', ')).join(' | ')
+            : 'No data returned'
         });
       }
-
-      setShowFeedback(true); // Show feedback after running code
+  
+      setShowFeedback(true);
     } catch (error) {
       console.error('Error executing query:', error);
-      setFeedback('Error executing query.');
-      setShowFeedback(true); // Show feedback on error
+      setFeedback({ isCorrect: false, userAnswer: 'Error executing query.' });
+      setShowFeedback(true);
+    } finally {
+      setIsRunning(false);
     }
   };
+  
   
 
   const compareResults = (userResults, expectedOutput) => {
@@ -172,6 +180,8 @@ const QuizApp = () => {
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
               <h3 className="text-xl font-bold mb-2">{currentQuestion.question_text}</h3>
               <br />
+              <h2 className='text-xl font-semibold mb-2'>{currentQuestion.table}</h2>
+              <br />
               <table className="w-full mb-2">
                 <thead>
                   <tr className={isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}>
@@ -223,12 +233,21 @@ const QuizApp = () => {
             options={{ fontSize: 16 }}
           />
           <div className="flex mt-2 space-x-2">
-            <button
-              className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
-              onClick={handleRunCode}
-            >
-              Run Code
-            </button>
+          <button
+  className={`flex-1 ${isRunning ? 'bg-blue-400' : 'bg-blue-500'} text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none flex items-center justify-center`}
+  onClick={handleRunCode}
+  disabled={isRunning}
+>
+  {isRunning ? (
+    <>
+      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Running...
+    </>
+  ) : 'Run Code'}
+</button>
             <button 
               onClick={handleSaveResults} 
               className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
@@ -237,31 +256,47 @@ const QuizApp = () => {
             </button>
           </div>
           <div className={`mt-4 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded p-4 flex-grow overflow-y-auto`}>
-            {showFeedback && (
-              <div className="mt-2 flex flex-col space-y-4">
-                {feedback.isCorrect ? (
-                  <span className="text-green-400 text-3xl font-semibold">Correct!</span>
-                ) : (
-                  <>
-                    <span className="text-red-400 text-xl font-semibold">Incorrect code!</span>
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr>
-                          <th className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>Expected Output</th>
-                          <th className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>Your Output</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="border px-4 py-2 whitespace-pre-wrap">{feedback.expected}</td>
-                          <td className="border px-4 py-2 whitespace-pre-wrap">{feedback.userAnswer}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </>
-                )}
-              </div>
-            )}
+          {showFeedback && (
+  <div className="mt-2 flex flex-col space-y-4">
+    {feedback.isCorrect ? (
+      <span className="text-green-400 text-3xl font-semibold">Correct!</span>
+    ) : (
+      <>
+        <span className="text-red-400 text-xl font-semibold">Incorrect code!</span>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>Your Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              {feedback.userAnswer && typeof feedback.userAnswer === 'string' ? (
+                feedback.userAnswer.split(' | ').map((row, index) => (
+                  <tr key={index}>
+                    <td className="border px-4 py-2 whitespace-nowrap">{row}</td>
+                  </tr>
+                ))
+              ) : Array.isArray(feedback.userAnswer) ? (
+                feedback.userAnswer.map((row, index) => (
+                  <tr key={index}>
+                    <td className="border px-4 py-2 whitespace-nowrap">
+                      {typeof row === 'object' ? Object.values(row).join(', ') : row}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="border px-4 py-2">No data available or invalid format</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )}
+  </div>
+)}
           </div>
         </div>
       </div>

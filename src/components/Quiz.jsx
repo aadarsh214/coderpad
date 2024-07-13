@@ -38,7 +38,7 @@ const Quiz = () => {
             return;
         }
 
-        // Check if quiz has already been completed for this quizID
+        //Check if quiz has already been completed for this quizID
         const quizCompletionStatus = localStorage.getItem(`quizCompleted_${quizID}`);
         if (quizCompletionStatus) {
             alert('You already attempted this quiz');
@@ -129,6 +129,8 @@ const Quiz = () => {
     // Calculate quiz duration in seconds
         const endTime = new Date();
          const durationInSeconds = Math.round((endTime - startTime) / 1000);
+
+       
 
         // Prepare data for the API call
         const userInfo = {
