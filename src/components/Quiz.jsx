@@ -20,8 +20,9 @@ const Quiz = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [userAnswers, setUserAnswers] = useState([]);
     const [score, setScore] = useState(0);
-    const [timer, setTimer] = useState(30);
+    const [timer, setTimer] = useState(80);
     const [quizCompleted, setQuizCompleted] = useState(false);
+    const [startTime, setStartTime] = useState(null);
 
     useEffect(() => {
         const parsed = queryString.parse(window.location.search);
@@ -49,6 +50,7 @@ const Quiz = () => {
             const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions/' + quizID);
             const data = await response.json();
             setQuestions(data);
+            setStartTime(new Date()); 
         };
         loadQuestions();
     }, []);
@@ -60,7 +62,7 @@ const Quiz = () => {
                     if (prevTimer <= 1) {
                         clearInterval(timerInterval);
                         handleTimeUp();
-                        return 30;
+                        return 80;
                     }
                     return prevTimer - 1;
                 });
@@ -79,7 +81,7 @@ const Quiz = () => {
 
     const loadQuestion = () => {
         setSelectedOption(null);
-        setTimer(30);
+        setTimer(80);
     };
 
     useEffect(() => {
@@ -122,13 +124,18 @@ const Quiz = () => {
         setScore(calculatedScore);
         setQuizCompleted(true);
 
-       
+
+        
+    // Calculate quiz duration in seconds
+        const endTime = new Date();
+         const durationInSeconds = Math.round((endTime - startTime) / 1000);
 
         // Prepare data for the API call
         const userInfo = {
             quizID: quizID,
             userID: `${user.email},  ${user.name}, ${user.phone_number}`,
             score: calculatedScore,
+            duration: durationInSeconds
         };
 
         try {
@@ -156,13 +163,7 @@ const Quiz = () => {
          showQuizAttemptedPopup();
     };
 
-    const showQuizAttemptedPopup = () => {
-        toast.info('You have already attempted this quiz.', {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 3000,
-            hideProgressBar: true,
-        });
-    };
+
 
     const resetQuiz = () => {
         // setCurrentQuestionIndex(0);
