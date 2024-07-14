@@ -1,45 +1,406 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* #root {
-  max-width: 1280px;
+
+.glow-effect {
+  transition: all 0.3s ease-in-out;
+}
+
+.glow-effect:hover {
+  transform: scale(1.1);
+  background: linear-gradient(to right, #0c6074, #3caabf);
+  box-shadow: 0 0 5px #0c6074, 0 0 50px #3caabf, 0 0 200px #3caabf;
+}
+
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: rgb(0, 0, 0);
+}
+
+.bgimage {
+  position: relative;
+  left: 17%;
+  bottom: 15%;
+}
+
+.glow {
+  position: absolute;
+  z-index: 1000; /* Ensure the glow is above the background image */
+  top: -5%;
+  left: 0; /* Position the glow on the left side */
+  filter: brightness(1.75);
+}
+
+.gloww1 {
+  position: absolute;
+  z-index: 1; /* Ensure the glow is above the background image */
+  top: 0;
+  right: 0; /* Position the glow on the right side */
+  filter: brightness(1.75);
+}
+
+.body {
+  position: absolute;
+  z-index: 5; /* Ensure the body is above other elements */
+  left: 27%; /* Shift towards left */
+  top: 5%;
+  bottom: -1%;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .body {
+    left: 20%;
+    top: 3%;
+    bottom: -3%;
+  }
+}
+
+@media (max-width: 767px) {
+  .body {
+    position: relative;
+    left: 10%;
+    top: 2%;
+    bottom: -5%;
+  }
+}
+
+@media (max-width: 480px) {
+  .body {
+    left: 5%;
+    top: 1%;
+    bottom: -7%;
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 2560px) {
+  .body {
+    left: 30%;
+    top: 7%;
+    bottom: 0%;
+  }
+}
+
+/* Small screens (up to 767px) */
+@media (max-width: 767px) {
+  .peon {
+    color: rgb(255, 255, 255);
+    margin-bottom: 0.5rem;
+    z-index: 5000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 24px;
+  }
+
+  .mainn {
+    position: absolute;
+    font-size: 24px;
+    left: 10%;
+    top: 20rem;
+    color: #58d7ed;
+  }
+}
+
+/* Medium screens (768px to 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .peon {
+    color: rgb(255, 255, 255);
+    margin-bottom: 0.75rem;
+    z-index: 5000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 30px;
+  }
+
+  .mainn {
+    position: absolute;
+    font-size: 30px;
+    left: 12rem;
+    top: 25rem;
+    color: #58d7ed;
+  }
+}
+
+/* Large screens (1200px and up) */
+@media (min-width: 1200px) {
+  .peon {
+    color: rgb(255, 255, 255);
+    margin-bottom: 1rem;
+    z-index: 5000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 35px;
+  }
+
+  .mainn {
+    position: absolute;
+    font-size: 35px;
+    left: 14rem;
+    top: 30rem;
+    color: #58d7ed;
+  }
+}
+
+.small {
+  width: 30%;
+  color: rgb(255, 255, 255);
+  position: absolute;
+  top: 62%;
+  left: 24%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  z-index: 2;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: normal;
+  z-index: 2000;
+}
+
+.animated-text {
+  position: absolute;
+  bottom: 18.7rem;
+  margin-bottom:-35% ;
+  left: 35%;
+  animation: blinkCursor 10s steps(40) infinite normal;
+  color: #ffffff;
+  font-size: 35px;
+}
+
+@keyframes blinkCursor {
+  0% { border-color: transparent; }
+  50% { border-color: #fff; }
+  100% { border-color: transparent; }
+}
+
+.btn1 {
+  z-index: 4000;
+  position: absolute;
+  bottom: 22%;
+  left: 14%;
+  transform: translateX(-50%);
+  width: 11%;
+  padding: 9px 5px;
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 21px;
+  cursor: pointer;
+  font-family: 'Open sans', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.btn1:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn2 {
+  position: absolute;
+  bottom: 22%;
+  left: 21%;
+  transform: translateX(-50%);
+  width: 11%;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 7px 5px;
+  background-color: transparent;
+  border: 1px solid #fff;
+  border-radius: 21px;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+  transition: transform .6s;
+  z-index: 4000;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.btn2 {
+  transform: scale(1);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.btn2:hover {
+  transform: scale(1.1);
+  background: linear-gradient(to right, #0c6074, #3caabf);
+  box-shadow: 0 0 5px #0c6074, 0 0 50px #3caabf, 0 0 200px #3caabf;
+}
+
+/* For Large Screens */
+@media screen and (min-width: 1024px) {
+  .peon {
+    font-size: 35px;
+    left: 11rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .mainn {
+    font-size: 35px;
+    left: 14rem;
+  }
+
+  .small {
+    font-size: 15px;
+  }
+
+  .animated-text {
+    font-size: 35px;
+    left: 35%;
+  }
+
+  .btn1 {
+    width: 12%;
+    font-size: 18px;
+  }
+
+  .btn2 {
+    width: 14%;
+    font-size: 20px;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* For Mac Screens (typically around 1280px) */
+@media screen and (min-width: 1280px) and (max-width: 1440px) {
+  .peon {
+    font-size: 40px;
+    left: 12rem;
+  }
+
+  .mainn {
+    font-size: 40px;
+    left: 18rem;
+  }
+
+  .small {
+    font-size: 18px;
+  }
+
+  .animated-text {
+    font-size: 40px;
+    left: 38%;
+  }
+
+  .btn1 {
+    width: 11%;
+    font-size: 17px;
+  }
+
+  .btn2 {
+    width: 13%;
+    font-size: 19px;
   }
 }
 
-.card {
-  padding: 2em;
+/* For Mobile Screens */
+@media screen and (max-width: 768px) {
+  p {
+    font-size: 3.5vw;
+    top: 35%;
+    left: 22%;
+    transform: translate(-50%, -50%);
+  }
+
+  .small {
+    font-size: 1.7vw;
+    top: 30rem;
+    left: 26%;
+    transform: translate(-50%, -50%);
+  }
+
+  .animated-text{
+    top: 65%;
+    font-size: 3.5vw;
+  }
+
+  .btn1{
+    width: 15%;
+    left: 10%;
+    transform: translateX(-50%);
+    font-size: 2vw;
+    margin: 15rem 0; /* Add vertical space between buttons */
+  }
+
+  .btn2{
+    padding: px;
+    width: 15%;
+    left: 10%;
+    transform: translateX(-50%);
+    font-size: 2vw;
+    margin: 15rem 10rem; /* Add vertical space between buttons */
+  }
+
+ .glow, .gloww1 {
+    max-width: 90%;
+    height: 50%;
+  }
+
+  .bgimage{
+    max-width: 120%;
+    height: 60%;
+    right: 10%;
+  }
+
+  .body{
+    bottom: 32rem;
+    width: 80vw;
+    left: 17rem;
+  }
 }
 
-.read-the-docs {
-  color: #888;
-} */
+/* For Extra Small Mobile Screens */
+@media screen and (max-width: 480px) {
+  p {
+    font-size: 3.5vw;
+    top: 35%;
+    left: 22%;
+    transform: translate(-50%, -50%);
+  }
+
+  .small {
+    font-size: 1.7vw;
+    top: 30rem;
+    left: 26%;
+    transform: translate(-50%, -50%);
+  }
+
+  .animated-text{
+    top: 65%;
+    font-size: 3.5vw;
+  }
+
+  .btn1{
+    width: 15%;
+    left: 10%;
+    transform: translateX(-50%);
+    font-size: 2vw;
+    margin: 15rem 0; /* Add vertical space between buttons */
+  }
+
+  .btn2{
+    padding: px;
+    width: 15%;
+    left: 10%;
+    transform: translateX(-50%);
+    font-size: 2vw;
+    margin: 15rem 10rem; /* Add vertical space between buttons */
+  }
+
+ .glow, .gloww1 {
+    max-width: 90%;
+    height: 50%;
+  }
+
+  .bgimage{
+    max-width: 120%;
+    height: 60%;
+    right: 10%;
+  }
+
+  .body{
+    bottom: 32rem;
+    width: 80vw;
+    left: 17rem;
+  }
+}
