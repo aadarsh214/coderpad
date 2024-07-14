@@ -154,7 +154,7 @@ const Home = () => {
             onClick={() => setFilterType('mcq')}
             className={`mx-1 px-5 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out glow-effect ${
               filterType === 'mcq'
-                ? 'bg-red-500 text-white shadow-md'
+                ? 'bg-blue-500 text-white shadow-md'
                 : 'bg-white text-gray-800 hover:bg-gray-200'
             }`}
           >
