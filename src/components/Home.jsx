@@ -97,7 +97,7 @@ const Home = () => {
     if (now < startDate) {
       return 'bg-blue-600 hover:bg-blue-700';
     } else if (now >= startDate && now <= endDate) {
-      return 'bg-emerald-600 hover:bg-green-700';
+      return 'bg-home-button hover:bg-gray-800';
     } else {
       return 'bg-gray-700 hover:bg-gray-700';
     }
@@ -120,32 +120,50 @@ const Home = () => {
     <div>
       <Navbar />
       <div className="flex flex-col items-center">
-        <div className="my-4">
-          <button
-            onClick={() => setFilterType('all')}
-            className={`mx-2 px-4 py-2 rounded-lg ${filterType === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilterType('sql')}
-            className={`mx-2 px-4 py-2 rounded-lg ${filterType === 'sql' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}
-          >
-            SQL
-          </button>
-          <button
-            onClick={() => setFilterType('python')}
-            className={`mx-2 px-4 py-2 rounded-lg ${filterType === 'python' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}
-          >
-            Python
-          </button>
-          <button
-            onClick={() => setFilterType('mcq')}
-            className={`mx-2 px-4 py-2 rounded-lg ${filterType === 'mcq' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}
-          >
-            MCQ
-          </button>
-        </div>
+  <div className="my-6 bg-gray-100 p-3 rounded-lg shadow-md">
+    <button
+      onClick={() => setFilterType('all')}
+      className={`mx-1 px-5 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out ${
+        filterType === 'all'
+          ? 'bg-blue-500 text-white shadow-md'
+          : 'bg-white text-gray-800 hover:bg-gray-200'
+      }`}
+    >
+      All
+    </button>
+    <button
+      onClick={() => setFilterType('sql')}
+      className={`mx-1 px-5 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out ${
+        filterType === 'sql'
+          ? 'bg-green-500 text-white shadow-md'
+          : 'bg-white text-gray-800 hover:bg-gray-200'
+      }`}
+    >
+      SQL
+    </button>
+    <button
+      onClick={() => setFilterType('python')}
+      className={`mx-1 px-5 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out ${
+        filterType === 'python'
+          ? 'bg-yellow-500 text-white shadow-md'
+          : 'bg-white text-gray-800 hover:bg-gray-200'
+      }`}
+    >
+      Python
+    </button>
+    <button
+      onClick={() => setFilterType('mcq')}
+      className={`mx-1 px-5 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out ${
+        filterType === 'mcq'
+          ? 'bg-red-500 text-white shadow-md'
+          : 'bg-white text-gray-800 hover:bg-gray-200'
+      }`}
+    >
+      MCQ
+    </button>
+  </div>
+
+
         <div className="flex flex-wrap justify-center">
   {filteredQuizzes.map((quiz) => (
     <div key={quiz._id} className="max-w-sm w-full sm:w-1/2 md:w-1/3 lg:w-1/4 rounded overflow-hidden shadow-xl m-4">
