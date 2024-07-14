@@ -264,34 +264,44 @@ const QuizApp = () => {
       <>
         <span className="text-red-400 text-xl font-semibold">Incorrect code!</span>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>Your Output</th>
-              </tr>
-            </thead>
-            <tbody>
-              {feedback.userAnswer && typeof feedback.userAnswer === 'string' ? (
-                feedback.userAnswer.split(' | ').map((row, index) => (
-                  <tr key={index}>
-                    <td className="border px-4 py-2 whitespace-nowrap">{row}</td>
-                  </tr>
-                ))
-              ) : Array.isArray(feedback.userAnswer) ? (
-                feedback.userAnswer.map((row, index) => (
-                  <tr key={index}>
-                    <td className="border px-4 py-2 whitespace-nowrap">
-                      {typeof row === 'object' ? Object.values(row).join(', ') : row}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className="border px-4 py-2">No data available or invalid format</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <table className="w-full border-collapse">
+  {/* <thead>
+    <tr>
+      {feedback.userAnswer && typeof feedback.userAnswer === 'string' && feedback.userAnswer.includes(',') ? (
+        feedback.userAnswer.split(' | ')[0].split(',').map((header, index) => (
+          <th key={index} className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>
+            Column {index + 1}
+          </th>
+        ))
+      ) : (
+        <th className={`border px-4 py-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} text-left`}>Your Output</th>
+      )}
+    </tr>
+  </thead> */}
+  <tbody>
+    {feedback.userAnswer && typeof feedback.userAnswer === 'string' ? (
+      feedback.userAnswer.split(' | ').map((row, rowIndex) => (
+        <tr key={rowIndex}>
+          {row.split(',').map((cell, cellIndex) => (
+            <td key={cellIndex} className="border px-4 py-2 whitespace-nowrap">{cell.trim()}</td>
+          ))}
+        </tr>
+      ))
+    ) : Array.isArray(feedback.userAnswer) ? (
+      feedback.userAnswer.map((row, rowIndex) => (
+        <tr key={rowIndex}>
+          {(typeof row === 'object' ? Object.values(row) : [row]).map((cell, cellIndex) => (
+            <td key={cellIndex} className="border px-4 py-2 whitespace-nowrap">{cell}</td>
+          ))}
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td className="border px-4 py-2">No data available or invalid format</td>
+      </tr>
+    )}
+  </tbody>
+</table>
         </div>
       </>
     )}
