@@ -20,6 +20,10 @@ const Home = () => {
     fetchQuizzes();
   }, []);
 
+  const removeQuizTypePrefix = (quizName) => {
+  return quizName.replace(/^(sql:|python:|mcq:)\s*/i, '');
+};
+
   const fetchQuizzes = async () => {
     try {
       const response = await axios.get('https://server.datasenseai.com/quiz/quizzes');
@@ -146,7 +150,7 @@ const Home = () => {
           {filteredQuizzes.map((quiz) => (
             <div key={quiz._id} className="max-w-sm rounded overflow-hidden shadow-xl m-4">
               <div className="px-6 py-4 border-[2px]">
-                <div className="text-xl mb-2">{quiz.quizName}</div>
+              <div className="text-xl mb-2">{removeQuizTypePrefix(quiz.quizName)}</div>
                 {/* <p className="text-gray-900 text-base">
                   Start Time: {new Date(quiz.start).toLocaleString()}<br />
                   End Time: {new Date(quiz.end).toLocaleString()}

@@ -153,24 +153,24 @@ const QuizApp = () => {
         {/* Left side: Question List and Details */}
         <div className="w-1/2 flex flex-col overflow-hidden">
           {/* Question List */}
-          <div className={`flex gap-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} px-4 h-1/8`}>
-            <h3 className="text-lg font-semibold mb-1 cursor-pointer ">Question</h3>
-            <h3 className="text-lg font-semibold mb-1 cursor-pointer">Solution</h3>
-            <ul className="flex">
+          <div className={`flex gap-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} px-4 h-1/8 `}>
+            {/* <h3 className="text-lg font-semibold mb-1 cursor-pointer ">Question</h3>
+            <h3 className="text-lg font-semibold mb-1 cursor-pointer">Solution</h3> */}
+            <ul className="flex flex-wrap gap-4 mb-4">
               {quizData.questions.map((question, index) => (
-                <li
-                  key={index}
-                  className={`cursor-pointer py-1 px-1 rounded ${
-                    index === currentQuestionIndex 
-                      ? ' text-white' 
-                      : isDarkMode 
-                        ? 'hover:bg-gray-700' 
-                        : 'hover:bg-gray-300'
-                  }`}
-                  onClick={() => handleQuestionSelect(index)}
-                >
-                  {index + 1}
-                </li>
+              <li
+              key={index}
+              className={`cursor-pointer py-2 px-4 rounded border ${
+                index === currentQuestionIndex 
+                  ? 'bg-green-500 text-white' 
+                  : isDarkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                    : 'bg-gray-300 text-gray-900 hover:bg-gray-400'
+              }`}
+              onClick={() => handleQuestionSelect(index)}
+            >
+              {index + 1}
+            </li>
               ))}
             </ul>
           </div>
@@ -248,10 +248,10 @@ const QuizApp = () => {
     </>
   ) : 'Run Code'}
 </button>
-            <button 
-              onClick={handleSaveResults} 
-              className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-            >
+<button 
+  onClick={handleSaveResults} 
+  className="flex-1 bg-white text-green-500 border border-green-500 px-4 py-2 rounded hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+>
               {buttonText}
             </button>
           </div>
