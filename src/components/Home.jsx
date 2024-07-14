@@ -117,8 +117,9 @@ const Home = () => {
   return (
     <div>
       <Navbar />
-      <div className="flex flex-col items-center">
-        <div className="my-6 bg-gray-100 p-3 rounded-lg shadow-md">
+      <div className="flex flex-col items-center bg-gradient-to-br from-gray-900 to-gray-700">
+        
+        <div className="my-6 bg-gray-100 p-3 rounded-lg shadow-md bg-gradient-to-br from-gray-900 to-gray-700">
           <button
             onClick={() => setFilterType('all')}
             className={`mx-1 px-5 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out glow-effect ${
@@ -163,9 +164,9 @@ const Home = () => {
 
         <div className="flex flex-wrap justify-center bg">
           {filteredQuizzes.map((quiz) => (
-            <div key={quiz._id} className="max-w-sm w-full sm:w-1/2 md:w-1/3 lg:w-1/4 rounded overflow-hidden shadow-xl m-4">
+            <div key={quiz._id} className="max-w-sm w-full sm:w-1/2 md:w-1/3 lg:w-1/4 rounded overflow-hidden shadow-xl m-4 bg-white text-gray-800">
               <div className="flex flex-col h-full">
-                <div className="px-6 py-4 border-[2px] flex-1">
+                <div className="px-6 py-4 flex-1">
                   <div className="text-xl mb-2 line-clamp-3">{removeQuizTypePrefix(quiz.quizName)}</div>
                 </div>
                 <div className="px-6 py-4">
