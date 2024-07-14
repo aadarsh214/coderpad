@@ -153,34 +153,62 @@ const QuizApp = () => {
         {/* Left side: Question List and Details */}
         <div className="w-1/2 flex flex-col overflow-hidden">
           {/* Question List */}
-          <div className={`flex gap-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} px-4 h-1/8 `}>
-            {/* <h3 className="text-lg font-semibold mb-1 cursor-pointer ">Question</h3>
-            <h3 className="text-lg font-semibold mb-1 cursor-pointer">Solution</h3> */}
-            <ul className="flex flex-wrap gap-4 mb-4">
-              {quizData.questions.map((question, index) => (
-              <li
-              key={index}
-              className={`cursor-pointer py-2 px-4 rounded border ${
-                index === currentQuestionIndex 
-                  ? 'bg-green-500 text-white' 
-                  : isDarkMode 
-                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                    : 'bg-gray-300 text-gray-900 hover:bg-gray-400'
-              }`}
-              onClick={() => handleQuestionSelect(index)}
-            >
-              {index + 1}
-            </li>
-              ))}
-            </ul>
-          </div>
+          <div className={`flex gap-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} px-4 h-1/8 relative`}>
+  <div className="overflow-x-auto whitespace-nowrap scrollbar-container">
+    <ul className="flex flex-nowrap gap-4 py-2">
+      {quizData.questions.map((question, index) => (
+        <li
+          key={index}
+          className={`cursor-pointer py-2 px-4 rounded border ${
+            index === currentQuestionIndex
+              ? 'bg-green-500 text-white'
+              : isDarkMode
+              ? 'bg-gray-700 text-white hover:bg-gray-600'
+              : 'bg-gray-300 text-gray-900 hover:bg-gray-400'
+          }`}
+          onClick={() => handleQuestionSelect(index)}
+        >
+          {index + 1}
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style jsx>{`
+  .scrollbar-container {
+    scrollbar-width: thin;
+    scrollbar-color: ${isDarkMode ? '#4B5563 #1F2937' : '#9CA3AF #E5E7EB'};
+  }
+  
+  .scrollbar-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-container::-webkit-scrollbar-track {
+    background: ${isDarkMode ? '#1F2937' : '#E5E7EB'};
+    border-radius: 4px;
+  }
+  
+  .scrollbar-container::-webkit-scrollbar-thumb {
+    background-color: ${isDarkMode ? '#4B5563' : '#9CA3AF'};
+    border-radius: 4px;
+    border: 2px solid ${isDarkMode ? '#1F2937' : '#E5E7EB'};
+  }
+
+  .scrollbar-container::-webkit-scrollbar-thumb:hover {
+    background-color: ${isDarkMode ? '#6B7280' : '#6B7280'};
+  }
+`}</style>
   
           {/* Question Details */}
           <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-4 flex-grow overflow-y-auto`}>
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
               <h3 className="text-xl font-bold mb-2">{currentQuestion.question_text}</h3>
+              <div className="border-t border-gray-300 my-4 w-full"></div>
               <br />
-              <h2 className='text-xl font-semibold mb-2'>{currentQuestion.table}</h2>
+              <h4 className='text-xl font-bold mb-2'>Table Data:</h4>
               <br />
               <table className="w-full mb-2">
                 <thead>
