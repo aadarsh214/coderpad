@@ -147,33 +147,37 @@ const Home = () => {
           </button>
         </div>
         <div className="flex flex-wrap justify-center">
-          {filteredQuizzes.map((quiz) => (
-            <div key={quiz._id} className="max-w-sm rounded overflow-hidden shadow-xl m-4">
-              <div className="px-6 py-4 border-[2px]">
-              <div className="text-xl mb-2">{removeQuizTypePrefix(quiz.quizName)}</div>
-                {/* <p className="text-gray-900 text-base">
-                  Start Time: {new Date(quiz.start).toLocaleString()}<br />
-                  End Time: {new Date(quiz.end).toLocaleString()}
-                </p> */}
-              </div>
-              <div className="px-6 py-4">
-                <button
-                  onClick={() => {
-                    if (determineButtonLabel(quiz) === 'Register') {
-                      handleRegisterQuiz(quiz._id, userID);
-                    } else if (determineButtonLabel(quiz) === 'Start') {
-                      handleStartQuiz(quiz._id, userID, quiz.quizName);
-                    }
-                  }}
-                  className={`text-white font-bold py-2 px-5 rounded-xl ${determineButtonColor(quiz)}`}
-                  disabled={determineButtonLabel(quiz) === 'Ended'}
-                >
-                  {determineButtonLabel(quiz)}
-                </button>
-              </div>
-            </div>
-          ))}
+  {filteredQuizzes.map((quiz) => (
+    <div key={quiz._id} className="max-w-sm w-full sm:w-1/2 md:w-1/3 lg:w-1/4 rounded overflow-hidden shadow-xl m-4">
+      <div className="flex flex-col h-full">
+        <div className="px-6 py-4 border-[2px] flex-1">
+          <div className="text-xl mb-2 line-clamp-3">{removeQuizTypePrefix(quiz.quizName)}</div>
+          {/* <p className="text-gray-900 text-base">
+            Start Time: {new Date(quiz.start).toLocaleString()}<br />
+            End Time: {new Date(quiz.end).toLocaleString()}
+          </p> */}
         </div>
+        <div className="px-6 py-4">
+          <button
+            onClick={() => {
+              if (determineButtonLabel(quiz) === 'Register') {
+                handleRegisterQuiz(quiz._id, userID);
+              } else if (determineButtonLabel(quiz) === 'Start') {
+                handleStartQuiz(quiz._id, userID, quiz.quizName);
+              }
+            }}
+            className={`text-white font-bold py-2 px-5 rounded-xl ${determineButtonColor(quiz)}`}
+            disabled={determineButtonLabel(quiz) === 'Ended'}
+          >
+            {determineButtonLabel(quiz)}
+          </button>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+
       </div>
     </div>
   );
