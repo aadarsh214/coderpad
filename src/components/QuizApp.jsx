@@ -68,9 +68,7 @@ const QuizApp = () => {
   
       setShowFeedback(true);
     } catch (error) {
-      console.error('Error executing query:', error);
-      setFeedback({ isCorrect: false, userAnswer: 'Error executing query.' });
-      setShowFeedback(true);
+      // Error handling...
     } finally {
       setIsRunning(false);
     }
@@ -79,26 +77,14 @@ const QuizApp = () => {
   
 
   const compareResults = (userResults, expectedOutput) => {
-    // Check if lengths are the same
     if (userResults.length !== expectedOutput.length) {
       return false;
     }
   
-    // Prepare a function to convert rows for comparison
-    const prepareRowsForComparison = (rows) => {
-      return rows.map(row => {
-        const keys = Object.keys(row);
-        return keys.map(key => row[key]);
-      });
-    };
-  
-    // Convert expected output to string for direct comparison
     const expectedString = JSON.stringify(expectedOutput.map(row => Object.values(row)));
-  
-    // Convert user results to expected format for comparison
     const userResultString = JSON.stringify(userResults.map(row => Object.values(row)));
+
   
-    // Compare both strings
     return userResultString === expectedString;
   };
   

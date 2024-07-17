@@ -65,6 +65,8 @@ const PythonQuizApp = () => {
   };
 
   const handleRunCode = async () => {
+    alert('Python Coderpad is on maintenance')
+    /*
     setShowFeedback(false);
     setFeedback('Running test cases...');
     setIsSubmitting(true);
@@ -81,6 +83,7 @@ const PythonQuizApp = () => {
 
     setShowFeedback(true);
     setIsSubmitting(false);
+    */
   };
 
   const handleQuestionSelect = (index) => {
