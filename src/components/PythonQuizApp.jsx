@@ -41,17 +41,23 @@ const PythonQuizApp = () => {
       const fullCode = `${userCode}\nprint(${testCase.input})`;
       try {
         const response = await axios.post(
-          'https://server.datasenseai.com/execute-python',
-          { pyCode: fullCode },
+          'https://emkc.org/api/v2/piston/execute',
+          {
+            language: 'python',
+            version: '3.10',
+            files: [
+              {
+                name: 'main.py',
+                content: fullCode
+              }
+            ]
+          },
           { headers: { 'Content-Type': 'application/json' } }
         );
-        let userOutput = response.data;
-        if (typeof userOutput !== 'string') {
-          userOutput = userOutput.toString().trim();
-        } else {
-          userOutput = userOutput.trim();
-        }
-
+        
+        let userOutput = response.data.run.output;
+        userOutput = userOutput.trim();
+  
         if (userOutput !== testCase.expected_output) {
           setUserOutput(userOutput); // Update user output state
           return false;
@@ -65,8 +71,8 @@ const PythonQuizApp = () => {
   };
 
   const handleRunCode = async () => {
-    alert('Python Coderpad is on maintenance')
-    /*
+    
+    
     setShowFeedback(false);
     setFeedback('Running test cases...');
     setIsSubmitting(true);
@@ -75,6 +81,7 @@ const PythonQuizApp = () => {
     const allTestCasesPassed = await checkAllTestCases(userCode, currentQuestion.test_cases);
 
     if (allTestCasesPassed) {
+      setUserOutput('');
       setFeedback('All test cases passed!');
       setScore(score + 1);
     } else {
@@ -83,7 +90,7 @@ const PythonQuizApp = () => {
 
     setShowFeedback(true);
     setIsSubmitting(false);
-    */
+    
   };
 
   const handleQuestionSelect = (index) => {

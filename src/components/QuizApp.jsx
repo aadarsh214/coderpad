@@ -24,16 +24,10 @@ const QuizApp = () => {
   const parsed = queryString.parse(window.location.search);
   const userID = parsed.userID;
   const quizID = parsed.quizID;
-
  
-
-
-  
-
   useEffect(() => {
-   
-    
-    const fetchQuizData = async () => {
+       
+   const fetchQuizData = async () => {
       try {
         const response = await axios.get(`https://server.datasenseai.com/sql-quiz/${quizID}/${userID}`);
         setQuizData(response.data);
@@ -69,8 +63,11 @@ const QuizApp = () => {
       setShowFeedback(true);
     } catch (error) {
       // Error handling...
+      setFeedback('Your query is incorrect');
+      setShowFeedback(true);
     } finally {
       setIsRunning(false);
+
     }
   };
   
@@ -147,7 +144,7 @@ const QuizApp = () => {
           key={index}
           className={`cursor-pointer py-2 px-4 rounded border ${
             index === currentQuestionIndex
-              ? 'bg-green-500 text-white'
+              ? 'bg-blue-500 text-white'
               : isDarkMode
               ? 'bg-gray-700 text-white hover:bg-gray-600'
               : 'bg-gray-300 text-gray-900 hover:bg-gray-400'
@@ -193,6 +190,8 @@ const QuizApp = () => {
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
               <h3 className="text-xl font-bold mb-2">{currentQuestion.question_text}</h3>
               <div className="border-t border-gray-300 my-4 w-full"></div>
+              <br />
+              <h4 className='text-xl font-bold mb-2'>Table Name: {currentQuestion.table_name}</h4>
               <br />
               <h4 className='text-xl font-bold mb-2'>Table Data:</h4>
               <br />
