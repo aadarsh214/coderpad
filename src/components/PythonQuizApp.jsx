@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import MonacoEditor from './ResizableMonacoEditor';
+import MonacoEditor from './ResizableMonacoEditor'; 
 import queryString from 'query-string';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -113,38 +113,48 @@ const PythonQuizApp = () => {
     setShowSolution(!showSolution);
   };
 
-  if (!quizData) return <div className='animate-bounce w-full h-screen flex items-center justify-center text-7xl font-bold'>STARTING....</div>;
+  if (!quizData) return <div className='animate-ping w-full h-screen flex items-center justify-center text-7xl font-thin'>STARTING....</div>;
 
   const currentQuestion = quizData.questions[currentQuestionIndex];
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
-      <nav className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 flex justify-between items-center`}>
-        <h1 className="text-xl font-bold">Python Quiz</h1>
-        <button
-          onClick={toggleDarkMode}
-          className={`px-4 py-2 rounded-full ${isDarkMode ? 'bg-white text-black' : 'bg-gray-800 text-white'}`}
-        >
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
+      <nav className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-4 flex justify-between items-center shadow-md`}>
+        <h1 className="text-2xl font-bold">Python Quiz</h1>
+        <div className="flex items-center space-x-4">
+          <span className="text-sm">Score: {score}</span>
+          <button
+            onClick={toggleDarkMode}
+            className={`p-2 rounded-full ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} transition-colors duration-200`}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
       </nav>
-      <div className="flex h-[calc(100vh-4rem)]">
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
         {/* Left side: Question List and Details */}
-        <div className="w-1/2 flex flex-col overflow-hidden">
+        <div className="w-full lg:w-1/2 flex flex-col overflow-hidden">
           {/* Question List */}
-          <div className={`flex gap-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 h-1/8 overflow-y-auto`}>
-            <h3 className="text-lg font-bold mb-4">Question</h3>
-            <h3 className="text-lg font-bold mb-4 cursor-pointer" onClick={toggleSolution}>Solution</h3>
-            <ul className="flex">
+          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 overflow-x-auto`}>
+            <div className="flex items-center space-x-4 mb-2">
+              <h3 className="text-lg font-bold">Questions</h3>
+              <button 
+                onClick={toggleSolution} 
+                className={`text-sm px-3 py-1 rounded ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-300 hover:bg-gray-400'}`}
+              >
+                {showSolution ? 'Hide Solution' : 'Show Solution'}
+              </button>
+            </div>
+            <ul className="flex space-x-2">
               {quizData.questions.map((question, index) => (
                 <li
                   key={index}
-                  className={`cursor-pointer py-2 px-4 rounded ${
+                  className={`cursor-pointer py-2 px-4 rounded transition-colors duration-200 ${
                     index === currentQuestionIndex 
                       ? 'bg-blue-500 text-white' 
                       : isDarkMode 
-                        ? 'hover:bg-gray-700' 
-                        : 'hover:bg-gray-300'
+                        ? 'bg-gray-700 hover:bg-gray-600' 
+                        : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                   onClick={() => handleQuestionSelect(index)}
                 >
@@ -161,11 +171,11 @@ const PythonQuizApp = () => {
             </div>
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
               <h3 className="text-lg font-bold mb-2">Test Cases</h3>
-              <ul>
+              <ul className="space-y-2">
                 {currentQuestion.test_cases.map((testCase, index) => (
-                  <li key={index} className="mb-2">
-                    <strong>Input:</strong> {testCase.input} <br />
-                    <strong>Expected Output:</strong> {testCase.expected_output}
+                  <li key={index} className={`p-2 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                    <strong>Input:</strong> <code className="text-sm">{testCase.input}</code> <br />
+                    <strong>Expected Output:</strong> <code className="text-sm">{testCase.expected_output}</code>
                   </li>
                 ))}
               </ul>
@@ -173,16 +183,33 @@ const PythonQuizApp = () => {
             {showSolution && (
               <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
                 <h3 className="text-lg font-bold mb-2">Solution</h3>
-                <pre>{currentQuestion.solution}</pre>
+                <pre className={`p-2 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                  <code>{currentQuestion.solution}</code>
+                </pre>
               </div>
             )}
           </div>
         </div>
 
         {/* Right side: Code Editor and Results */}
-        <div className={`w-1/2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 flex flex-col`}>
-          <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-t-lg p-2`}>
+        <div className={`w-full lg:w-1/2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 flex flex-col`}>
+          <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-t-lg p-2 flex justify-between items-center`}>
             <span className="font-semibold">Python</span>
+            <div className="flex space-x-2">
+              <button
+                className={`px-3 py-1 rounded text-white ${isSubmitting ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'} focus:outline-none transition-colors duration-200`}
+                onClick={handleRunCode}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Running...' : 'Run Code'}
+              </button>
+              <button 
+                onClick={handleSubmitQuiz}
+                className="px-3 py-1 rounded text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors duration-200"
+              >
+                Submit Quiz
+              </button>
+            </div>
           </div>
           <MonacoEditor
             width="100%"
@@ -193,31 +220,18 @@ const PythonQuizApp = () => {
             onChange={setUserCode}
             options={{ fontSize: 16 }}
           />
-          <div className="flex mt-2 space-x-2">
-            <button
-              className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
-              onClick={handleRunCode}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Running...' : 'Run Code'}
-            </button>
-            <button 
-              onClick={handleSubmitQuiz} 
-              className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-            >
-              Submit
-            </button>
-          </div>
           <div className={`mt-4 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded p-4 flex-grow overflow-y-auto`}>
             {showFeedback && (
-              <p className={feedback.includes('All test cases passed') ? 'text-green-500' : 'text-red-500'}>
+              <div className={`p-2 rounded mb-2 ${feedback.includes('All test cases passed') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                 {feedback}
-              </p>
+              </div>
             )}
             {userOutput && (
               <div>
-                <h3 className="text-lg font-bold">Your Output:</h3>
-                <pre>{userOutput}</pre>
+                <h3 className="text-lg font-bold mb-2">Your Output:</h3>
+                <pre className={`p-2 rounded ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+                  <code>{userOutput}</code>
+                </pre>
               </div>
             )}
           </div>

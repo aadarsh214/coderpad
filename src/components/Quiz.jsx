@@ -180,94 +180,97 @@ const Quiz = () => {
     };
 
     if (questions.length === 0) {
-        return <div className="h-screen flex items-center justify-center bg-gray-50">Loading...</div>;
+        return <div className='animate-ping w-full h-screen flex items-center justify-center text-7xl font-thin'>STARTING....</div>;
     }
 
     if (quizCompleted) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+                    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+                        <h1 className="text-3xl font-semibold mb-6 text-gray-800">Quiz Completed</h1>
+                        <p className="text-2xl mb-6 text-gray-700">
+                            Your Score: <span className="font-semibold">{score}</span> / {questions.length}
+                        </p>
+                        <div className="mb-6 space-y-4">
+                            {questions.map((question, index) => (
+                                <div key={index} className="border-b pb-4">
+                                    <h2 className="text-lg font-medium mb-2 text-gray-800">{question.question}</h2>
+                                    <p
+                                        className={`p-2 rounded ${
+                                            userAnswers[index] &&
+                                            questions[index].options[userAnswers[index]] === questions[index].answer
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
+                                        }`}
+                                    >
+                                        Your answer: {questions[index].options[userAnswers[index]] || 'Not answered'}
+                                    </p>
+                                    <p className="p-2 rounded bg-blue-100 text-blue-800 mt-2">
+                                        Correct answer: {questions[index].answer}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                        <button
+                            className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600 transition duration-300"
+                            onClick={resetQuiz}
+                        >
+                            Go Back
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+    
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-                <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-                    <h1 className="text-3xl font-semibold mb-6 text-gray-800">Quiz Completed</h1>
-                    <p className="text-2xl mb-6 text-gray-700">
-                        Your Score: <span className="font-semibold">{score}</span> / {questions.length}
-                    </p>
-                    <div className="mb-6 space-y-4">
-                        {questions.map((question, index) => (
-                            <div key={index} className="border-b pb-4">
-                                <h2 className="text-lg font-medium mb-2 text-gray-800">{question.question}</h2>
-                                <p
-                                    className={`p-2 rounded ${
-                                        userAnswers[index] &&
-                                        questions[index].options[userAnswers[index]] === questions[index].answer
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
+            <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+                <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
+                    <div className="flex justify-between items-center mb-6">
+                        <span className="text-sm text-gray-500">
+                            Question {currentQuestionIndex + 1} of {questions.length}
+                        </span>
+                        <span className="text-sm font-semibold text-[#4B5563]">Time Remaining  {timer}s</span>
+                    </div>
+                    <div className="bg-gray-800 p-6 rounded-lg mb-6">
+                        <h1 className=" text-2xl font-semibold text-white">{questions[currentQuestionIndex].question}</h1>
+                    </div>
+                    <div className="space-y-4 mb-8">
+                        {Object.entries(questions[currentQuestionIndex].options).map(([key, value]) => (
+                            <div
+                                key={key}
+                                className={`p-3 rounded cursor-pointer transition-colors duration-300
+                                    ${selectedOption === key
+                                        ? 'bg-cyan-500 text-white'
+                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                                     }`}
-                                >
-                                    Your answer: {questions[index].options[userAnswers[index]] || 'Not answered'}
-                                </p>
-                                <p className="p-2 rounded bg-blue-100 text-blue-800 mt-2">
-                                    Correct answer: {questions[index].answer}
-                                </p>
+                                onClick={() => selectOption(key)}
+                            >
+                                {value}
                             </div>
                         ))}
                     </div>
-                    <button
-                        className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600 transition duration-300"
-                        onClick={resetQuiz}
-                    >
-                        Go Back
-                    </button>
+                    <div className="flex justify-end">
+                        
+                        {currentQuestionIndex === questions.length - 1 ? (
+                            <button
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                                onClick={submitQuiz}
+                            >
+                                Submit
+                            </button>
+                        ) : (
+                            <button
+                                className="bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition duration-300"
+                                onClick={nextQuestion}
+                            >
+                                Next
+                            </button>
+                        )}
+                    </div>
                 </div>
+                <ToastContainer />
             </div>
         );
-    }
-
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-                <div className="flex justify-between items-center mb-6">
-                    <span className="text-sm text-gray-500">
-                        Question {currentQuestionIndex + 1} of {questions.length}
-                    </span>
-                    <span className="text-sm font-semibold text-blue-500">{timer}s</span>
-                </div>
-                <h1 className="text-2xl font-semibold mb-6 text-gray-800">{questions[currentQuestionIndex].question}</h1>
-                <div className="space-y-4 mb-8">
-                    {Object.entries(questions[currentQuestionIndex].options).map(([key, value]) => (
-                        <div
-                            key={key}
-                            className={`p-3 rounded border cursor-pointer transition-colors duration-300
-                                ${selectedOption === key
-                                    ? 'bg-blue-500 text-white border-blue-600'
-                                    : 'bg-white text-gray-800 border-gray-300 hover:border-blue-500'
-                                }`}
-                            onClick={() => selectOption(key)}
-                        >
-                            {value}
-                        </div>
-                    ))}
-                </div>
-                <div className="flex justify-between">
-                    {currentQuestionIndex === questions.length - 1 ? (
-                        <button
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
-                            onClick={submitQuiz}
-                        >
-                            Submit
-                        </button>
-                    ) : (
-                        <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-                            onClick={nextQuestion}
-                        >
-                            Next
-                        </button>
-                    )}
-                </div>
-            </div>
-            <ToastContainer />
-        </div>
-    );
-};
-
-export default Quiz;
+    };
+    
+    export default Quiz;

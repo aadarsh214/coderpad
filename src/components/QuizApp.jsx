@@ -3,6 +3,7 @@ import axios from 'axios';
 import MonacoEditor from './ResizableMonacoEditor' // Assuming you have a Monaco Editor wrapper component
 import queryString from 'query-string';
 import {useAuth0} from '@auth0/auth0-react'
+import { useNavigate } from 'react-router-dom';
 
 const QuizApp = () => {
 
@@ -89,10 +90,12 @@ const QuizApp = () => {
     setCurrentQuestionIndex(index);
     setFeedback('');  
     setShowFeedback(false); // Reset feedback when selecting new question
+    
   };
+  
 
 
-  if (!quizData) return <div className='animate-bounce w-full h-screen flex items-center justify-center text-7xl font-bold'>STARTING....</div>;
+  if (!quizData) return <div className='animate-ping w-full h-screen flex items-center justify-center text-7xl font-thin'>STARTING....</div>;
 
   const currentQuestion = quizData.questions[currentQuestionIndex];
 

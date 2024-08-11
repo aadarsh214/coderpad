@@ -6,6 +6,7 @@ export default {
   ],
   theme: {
     extend: {
+      
       colors: {
         'custom-blue': '#1ea3a7',
         'home-button': '#000e14'
