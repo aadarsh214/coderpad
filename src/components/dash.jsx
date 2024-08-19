@@ -3,7 +3,7 @@ import axios from 'axios';
 import queryString from 'query-string';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Video, FileText } from 'lucide-react';
+import { Video, FileText, Sun, Moon } from 'lucide-react';
 
 const skills = ['Excel', 'SQL', 'Python', 'PowerBI', 'Tableau'];
 
@@ -12,6 +12,7 @@ const DataSkillsDashboard = () => {
   const navigateTo = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const parsed = queryString.parse(window.location.search);
   const userID = parsed.userID;
 
@@ -114,15 +115,19 @@ const DataSkillsDashboard = () => {
     : quizzes;
 
   return (
-    <div className="font-sans bg-gray-100 min-h-screen">
-      <header className="bg-cyan-700 text-white p-2 flex justify-between items-center">
-        <img src='https://yt3.googleusercontent.com/vMtEn2oq7qS2XRzJYVWp0VCakKiKu7_aQpg7VmA3xnefM7qOfLdvkTw1e5FEquZtCXrcyXW_vQ=s160-c-k-c0x00ffffff-no-rj' 
-        width={36} />
-        {/* <h1 className="text-4xl font-light ">DataSense</h1> */}
-        <div>
+    <div className={`font-sans min-h-screen ${isDarkMode ? 'bg-[#262626] text-white' : 'bg-gray-100 text-black'}`}>
+      <header className={`${isDarkMode ? 'bg-[#403f3f]' : 'bg-cyan-700'} p-2 flex justify-between items-center`}>
+        <h1 className="text-3xl text-white">Datasense</h1>
+        <div className="flex items-center">
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`mr-4 p-2 rounded-full ${isDarkMode ? 'bg-yellow-400 text-[#262626]' : 'bg-[#262626] text-yellow-400'}`}
+          >
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
           {isAuthenticated ? (
             <div className="flex items-center">
-              <span className="mr-4">Welcome, {user.name}</span>
+              <span className="mr-4 text-white">Welcome, {user.name}</span>
               <button
                 onClick={() => logout({ returnTo: window.location.origin })}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -149,7 +154,9 @@ const DataSkillsDashboard = () => {
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 
                 ${selectedSkill === skill 
                   ? 'bg-cyan-600 text-white' 
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'}`}
+                  : isDarkMode
+                    ? 'bg-[#403f3f] text-white border border-gray-600 hover:bg-[#4a4a4a]'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'}`}
               onClick={() => setSelectedSkill(skill === selectedSkill ? null : skill)}
             >
               {skill}
@@ -157,9 +164,9 @@ const DataSkillsDashboard = () => {
           ))}
         </div>
 
-        <div className="bg-white shadow-md rounded-lg overflow-x-auto">
+        <div className={`${isDarkMode ? 'bg-[#403f3f]' : 'bg-white'} shadow-md rounded-lg overflow-x-auto`}>
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className={isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}>
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Topic</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
@@ -168,13 +175,13 @@ const DataSkillsDashboard = () => {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className={`${isDarkMode ? 'bg-[#403f3f]' : 'bg-white'} divide-y ${isDarkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
               {filteredQuizzes.map((quiz, index) => (
-                <tr key={quiz._id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr key={quiz._id} className={index % 2 === 0 ? (isDarkMode ? 'bg-[#333333]' : 'bg-gray-50') : (isDarkMode ? 'bg-[#403f3f]' : 'bg-white')}>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm">
                     {getQuizType(quiz.quizName)}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                     {removeQuizTypePrefix(quiz.quizName)}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">

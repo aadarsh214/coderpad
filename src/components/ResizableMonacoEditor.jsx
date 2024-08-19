@@ -41,6 +41,7 @@ const ResizableMonacoEditor = ({ language, defaultValue, onChange }) => {
       maxConstraints={[800, 600]}
       onResize={handleResize}
       resizeHandles={['se']}
+    
     >
       <div ref={editorRef} style={{ width: '100%', height: '100%' }} />
     </ResizableBox>

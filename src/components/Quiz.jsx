@@ -1,276 +1,281 @@
 import React, { useState, useEffect } from 'react';
-import 'tailwindcss/tailwind.css';
-import { useAuth0 } from '@auth0/auth0-react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import MonacoEditor from './ResizableMonacoEditor' // Assuming you have a Monaco Editor wrapper component
 import queryString from 'query-string';
+import {useAuth0} from '@auth0/auth0-react'
 
+const QuizApp = () => {
+  const {loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently} = useAuth0();
 
+  const [quizData, setQuizData] = useState(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userQuery, setUserQuery] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [saveStatus, setSaveStatus] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [buttonText, setButtonText] = useState('Save Results');
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
 
-
-const Quiz = () => {
-    const { loginWithPopup, loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0();
-    const parsed = queryString.parse(window.location.search);
-    const userID = parsed.userID;
-    const quizID = parsed.quizID;
-   
-
-    const [questions, setQuestions] = useState([]);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedOption, setSelectedOption] = useState(null);
-    const [userAnswers, setUserAnswers] = useState([]);
-    const [score, setScore] = useState(0);
-    const [timer, setTimer] = useState(80);
-    const [quizCompleted, setQuizCompleted] = useState(false);
-    const [startTime, setStartTime] = useState(null);
-
-    useEffect(() => {
-        const parsed = queryString.parse(window.location.search);
-        const userID = parsed.userID;
-        const quizID = parsed.quizID;
-        
-        console.log('Parsed query string:', parsed);
-        console.log('UserID:', userID);
-        console.log('QuizID:', quizID);
-
-        if (!userID || !quizID) {
-            alert('User ID or Quiz ID is missing in the URL');
-            return;
-        }
-
-        //Check if quiz has already been completed for this quizID
-        const quizCompletionStatus = localStorage.getItem(`quizCompleted_${quizID}`);
-        if (quizCompletionStatus) {
-            alert('You already attempted this quiz');
-            window.location.href = '/?userID=' + userID;
-            return;
-        }
-
-        const loadQuestions = async () => {
-            const response = await fetch('https://server.datasenseai.com/quizadmin/python-mcq-questions/' + quizID);
-            const data = await response.json();
-            setQuestions(data);
-            setStartTime(new Date()); 
-        };
-        loadQuestions();
-    }, []);
-
-    useEffect(() => {
-        if (questions.length > 0 && !quizCompleted) {
-            const timerInterval = setInterval(() => {
-                setTimer(prevTimer => {
-                    if (prevTimer <= 1) {
-                        clearInterval(timerInterval);
-                        handleTimeUp();
-                        return 80;
-                    }
-                    return prevTimer - 1;
-                });
-            }, 1000);
-            return () => clearInterval(timerInterval);
-        }
-    }, [currentQuestionIndex, questions, quizCompleted]);
-
-    const handleTimeUp = () => {
-        if (currentQuestionIndex < questions.length - 1) {
-            nextQuestion();
-        } else {
-            submitQuiz();
-        }
+  const parsed = queryString.parse(window.location.search);
+  const userID = parsed.userID;
+  const quizID = parsed.quizID;
+ 
+  useEffect(() => {
+    const fetchQuizData = async () => {
+      try {
+        const response = await axios.get(`https://server.datasenseai.com/sql-quiz/${quizID}/${userID}`);
+        setQuizData(response.data);
+      } catch (error) {
+        console.error('Error fetching quiz data:', error);
+      }
     };
 
-    const loadQuestion = () => {
-        setSelectedOption(null);
-        setTimer(80);
-    };
+    fetchQuizData();
+  }, []);
 
-    useEffect(() => {
-        if (questions.length > 0) {
-            loadQuestion();
-        }
-    }, [currentQuestionIndex, questions]);
-
-    const selectOption = (optionKey) => {
-        setSelectedOption(optionKey);
-    };
-
-    const prevQuestion = () => {
-        if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(currentQuestionIndex - 1);
-            setSelectedOption(userAnswers[currentQuestionIndex - 1] || null);
-        }
-    };
-
-    const nextQuestion = () => {
-        const newAnswers = [...userAnswers];
-        newAnswers[currentQuestionIndex] = selectedOption || null;
-        setUserAnswers(newAnswers);
-
-        if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-            setSelectedOption(userAnswers[currentQuestionIndex + 1] || null);
-        }
-    };
-
-    const submitQuiz = async () => {
-        const newAnswers = [...userAnswers];
-        newAnswers[currentQuestionIndex] = selectedOption || null;
-        setUserAnswers(newAnswers);
-
-        const calculatedScore = newAnswers.reduce((total, userAnswer, index) => {
-            return userAnswer && questions[index].options[userAnswer] === questions[index].answer ? total + 1 : total;
-        }, 0);
-
-        setScore(calculatedScore);
-        setQuizCompleted(true);
-
-
-        
-    // Calculate quiz duration in seconds
-        const endTime = new Date();
-         const durationInSeconds = Math.round((endTime - startTime) / 1000);
-
-       
-
-        // Prepare data for the API call
-        const userInfo = {
-            quizID: quizID,
-            userID: `${user.email},  ${user.name}, ${user.phone_number}`,
-            score: calculatedScore,
-            duration: durationInSeconds
-        };
-
-        try {
-            const response = await fetch('https://server.datasenseai.com/quizadmin/update-scores', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userInfo),
-            });
-
-            if (response.ok) {
-                console.log('Score updated successfully!');
-            } else {
-                console.error('Failed to update score:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Error updating score:', error.message);
-        }
-
-         // Save quiz completion status for this quizID
-         localStorage.setItem(`quizCompleted_${quizID}`, true);
-
-         // Show attempt popup
-         showQuizAttemptedPopup();
-    };
-
-
-
-    const resetQuiz = () => {
-        // setCurrentQuestionIndex(0);
-        // setSelectedOption(null);
-        // setUserAnswers([]);
-        // setScore(0);
-        // setTimer(30);
-        // setQuizCompleted(false);
-
-        window.location.href = '/?userID=' + userID;
-        return;
-    };
-
-    if (questions.length === 0) {
-        return <div className='animate-ping w-full h-screen flex items-center justify-center text-7xl font-thin'>STARTING....</div>;
+  const handleRunCode = async () => {
+    setIsRunning(true);
+    try {
+      const response = await axios.get(`https://server.datasenseai.com/execute-sql/query?q=${encodeURIComponent(userQuery)}`);
+      const userAnswer = response.data;
+  
+      const expectedOutput = quizData.questions[currentQuestionIndex].expected_output;
+      const isCorrect = compareResults(userAnswer, expectedOutput);
+  
+      if (isCorrect) {
+        setFeedback({ text: 'Correct!', isCorrect: true, userAnswer: userAnswer });
+      } else {
+        setFeedback({
+          isCorrect: false,
+          expected: expectedOutput.map(row => Object.values(row).join(', ')).join(' | '),
+          userAnswer: Array.isArray(userAnswer) 
+            ? userAnswer.map(row => Object.values(row).join(', ')).join(' | ')
+            : 'No data returned'
+        });
+      }
+  
+      setShowFeedback(true);
+    } catch (error) {
+      setFeedback('Your query is incorrect');
+      setShowFeedback(true);
+    } finally {
+      setIsRunning(false);
     }
+  };
+  
+  const compareResults = (userResults, expectedOutput) => {
+    if (userResults.length !== expectedOutput.length) {
+      return false;
+    }
+  
+    const expectedString = JSON.stringify(expectedOutput.map(row => Object.values(row)));
+    const userResultString = JSON.stringify(userResults.map(row => Object.values(row)));
 
-    if (quizCompleted) {
-            return (
-                <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-                    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-                        <h1 className="text-3xl font-semibold mb-6 text-gray-800">Quiz Completed</h1>
-                        <p className="text-2xl mb-6 text-gray-700">
-                            Your Score: <span className="font-semibold">{score}</span> / {questions.length}
-                        </p>
-                        <div className="mb-6 space-y-4">
-                            {questions.map((question, index) => (
-                                <div key={index} className="border-b pb-4">
-                                    <h2 className="text-lg font-medium mb-2 text-gray-800">{question.question}</h2>
-                                    <p
-                                        className={`p-2 rounded ${
-                                            userAnswers[index] &&
-                                            questions[index].options[userAnswers[index]] === questions[index].answer
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }`}
-                                    >
-                                        Your answer: {questions[index].options[userAnswers[index]] || 'Not answered'}
-                                    </p>
-                                    <p className="p-2 rounded bg-blue-100 text-blue-800 mt-2">
-                                        Correct answer: {questions[index].answer}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                        <button
-                            className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600 transition duration-300"
-                            onClick={resetQuiz}
-                        >
-                            Go Back
-                        </button>
-                    </div>
-                </div>
-            );
-        }
-    
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-                <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
-                    <div className="flex justify-between items-center mb-6">
-                        <span className="text-sm text-gray-500">
-                            Question {currentQuestionIndex + 1} of {questions.length}
-                        </span>
-                        <span className="text-sm font-semibold text-[#4B5563]">Time Remaining  {timer}s</span>
-                    </div>
-                    <div className="bg-gray-800 p-6 rounded-lg mb-6">
-                        <h1 className=" text-2xl font-semibold text-white">{questions[currentQuestionIndex].question}</h1>
-                    </div>
-                    <div className="space-y-4 mb-8">
-                        {Object.entries(questions[currentQuestionIndex].options).map(([key, value]) => (
-                            <div
-                                key={key}
-                                className={`p-3 rounded cursor-pointer transition-colors duration-300
-                                    ${selectedOption === key
-                                        ? 'bg-cyan-500 text-white'
-                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                                    }`}
-                                onClick={() => selectOption(key)}
-                            >
-                                {value}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-end">
-                        
-                        {currentQuestionIndex === questions.length - 1 ? (
-                            <button
-                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
-                                onClick={submitQuiz}
-                            >
-                                Submit
-                            </button>
-                        ) : (
-                            <button
-                                className="bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition duration-300"
-                                onClick={nextQuestion}
-                            >
-                                Next
-                            </button>
-                        )}
-                    </div>
-                </div>
-                <ToastContainer />
+    return userResultString === expectedString;
+  };
+  
+  const handleQuestionSelect = (index) => {
+    setCurrentQuestionIndex(index);
+    setFeedback('');  
+    setShowFeedback(false);
+  };
+
+  if (!quizData) return <div className='animate-ping w-full h-screen flex items-center justify-center text-7xl font-thin'>STARTING....</div>;
+
+  const currentQuestion = quizData.questions[currentQuestionIndex];
+
+  const handleSaveResults = async () =>{
+    try{
+      setButtonText('Submitting...');
+      const response = await axios.post('https://server.datasenseai.com/sql-quiz/update-scores',{
+        quizID: parsed.quizID,
+        userID: parsed.userID,
+        score : 1 
+      });
+
+      console.log('Results saved successfully:', response.data);
+      setSaveStatus('Results saved successfully!');
+      setButtonText('Submitted');
+      window.location.href = '/?userID=' + userID;
+    } catch(error) {
+      window.location.href = '/?userID=' + userID;
+      console.error('Error saving quiz results:', error);
+      setSaveStatus('Failed to save results. Please try again.');
+      setButtonText('Submitted');
+    }
+  };
+
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+      <nav className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 flex justify-between items-center`}>
+        <h1 className="mb-4 text-xl font-bold">SQL Quiz</h1>
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className={`px-4 py-2 rounded-full ${isDarkMode ? 'bg-white text-black' : 'bg-gray-800 text-white'}`}
+        >
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+      </nav>
+      <div className="flex h-[calc(100vh-4rem)]">
+        {/* Left side: Question List and Details */}
+        <div className="w-1/2 flex flex-col overflow-hidden">
+          {/* Question List */}
+          <div className={`flex gap-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} px-4 h-1/8 relative`}>
+            <div className="overflow-x-auto whitespace-nowrap scrollbar-container">
+              <ul className="flex flex-nowrap gap-4 py-2">
+                {quizData.questions.map((question, index) => (
+                  <li
+                    key={index}
+                    className={`cursor-pointer py-2 px-4 rounded border ${
+                      index === currentQuestionIndex
+                        ? 'bg-blue-500 text-white'
+                        : isDarkMode
+                        ? 'bg-gray-700 text-white hover:bg-gray-600'
+                        : 'bg-gray-300 text-gray-900 hover:bg-gray-400'
+                    }`}
+                    onClick={() => handleQuestionSelect(index)}
+                  >
+                    {index + 1}
+                  </li>
+                ))}
+              </ul>
             </div>
-        );
-    };
-    
-    export default Quiz;
+          </div>
+
+          {/* Question Details */}
+          <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-4 flex-grow overflow-y-auto`}>
+            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
+              <div 
+                className="question-text"
+                dangerouslySetInnerHTML={{ __html: currentQuestion.question_text }}
+              />
+              <div className="border-t border-gray-300 my-4 w-full"></div>
+              <h4 className='text-xl font-bold mb-2'>Table Names: {currentQuestion.table_names.join(', ')}</h4>
+              <h4 className='text-xl font-bold mb-2'>Table Data:</h4>
+              {currentQuestion.table_data.map((table, tableIndex) => (
+                <div key={tableIndex} className="table-container mb-4">
+                  <h5 className='text-lg font-bold mb-2'>Table Name: {table.table_name}</h5>
+                  <table className="w-full mb-2">
+                    <thead>
+                      <tr className={isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}>
+                        {table.columns.map((column, columnIndex) => (
+                          <th key={columnIndex} className="border px-4 py-2">{column}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {table.rows.map((row, rowIndex) => (
+                        <tr key={rowIndex} className={isDarkMode ? 'bg-gray-600' : 'bg-gray-50'}>
+                          {row.map((cell, cellIndex) => (
+                            <td key={cellIndex} className="border px-4 py-2">
+                              {typeof cell === 'object' ? JSON.stringify(cell) : cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 mb-4 shadow-md`}>
+              <h3 className="text-lg font-bold mb-2">Expected Answer</h3>
+              <table className="w-full mb-2">
+                <tbody>
+                  {currentQuestion.expected_output.map((row, rowIndex) => (
+                    <tr key={rowIndex} className={isDarkMode ? 'bg-gray-600' : 'bg-gray-50'}>
+                      {row.map((value, cellIndex) => (
+                        <td key={cellIndex} className="border px-4 py-2">{value}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+  
+        {/* Right side: Code Editor and Results */}
+        <div className={`w-2/3 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 flex flex-col`}>
+          <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-t-lg p-2`}>
+            <span className="font-semibold">SQL</span>
+          </div>
+          <MonacoEditor
+            width="100%"
+            height="400"
+            language="sql"
+            theme={isDarkMode ? "vs-dark" : "light"}
+            value={userQuery}
+            onChange={setUserQuery}
+          />
+          <div className="flex mt-2 space-x-2">
+            <button
+              className={`flex-1 ${isRunning ? 'bg-blue-400' : 'bg-blue-500'} text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none flex items-center justify-center`}
+              onClick={handleRunCode}
+              disabled={isRunning}
+            >
+              {isRunning ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Running...
+                </>
+              ) : 'Run Code'}
+            </button>
+            <button 
+              onClick={handleSaveResults} 
+              className="flex-1 bg-white text-green-500 border border-green-500 px-4 py-2 rounded hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+            >
+              {buttonText}
+            </button>
+          </div>
+          <div className={`mt-4 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded p-4 flex-grow overflow-y-auto`}>
+            {showFeedback && (
+              <div className="mt-2 flex flex-col space-y-4">
+                {feedback.isCorrect ? (
+                  <span className="text-green-400 text-3xl font-semibold">Correct!</span>
+                ) : (
+                  <>
+                    <span className="text-red-400 text-xl font-semibold">Incorrect code!</span>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <tbody>
+                          {feedback.userAnswer && typeof feedback.userAnswer === 'string' ? (
+                            feedback.userAnswer.split(' | ').map((row, rowIndex) => (
+                              <tr key={rowIndex}>
+                                {row.split(',').map((cell, cellIndex) => (
+                                  <td key={cellIndex} className="border px-4 py-2 whitespace-nowrap">{cell.trim()}</td>
+                                ))}
+                              </tr>
+                            ))
+                          ) : Array.isArray(feedback.userAnswer) ? (
+                            feedback.userAnswer.map((row, rowIndex) => (
+                              <tr key={rowIndex}>
+                                {(typeof row === 'object' ? Object.values(row) : [row]).map((cell, cellIndex) => (
+                                  <td key={cellIndex} className="border px-4 py-2 whitespace-nowrap">{cell}</td>
+                                ))}
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td className="border px-4 py-2">No data available or invalid format</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuizApp;
